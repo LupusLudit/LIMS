@@ -4,9 +4,25 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LIMS.UI"
+        xmlns:controls="clr-namespace:LIMS.UI.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="LIMS" Height="800" Width="1100"
+        ResizeMode="NoResize">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="125"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <controls:ToolsPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"/>
+        <controls:PreviewPanel Grid.Row="0" Grid.Column="1"/>
+        <controls:ActionPanel Grid.Row="1" Grid.Column="1"/>
 
     </Grid>
+
 </Window>
