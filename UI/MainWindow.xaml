@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LIMS.UI"
         xmlns:controls="clr-namespace:LIMS.UI.Controls"
         mc:Ignorable="d"
-        Title="LIMS" Height="800" Width="1100"
+        Title="LIMS" Height="800" Width="1200"
         ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
@@ -20,8 +20,8 @@
         </Grid.ColumnDefinitions>
         
         <controls:ToolsPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"/>
-        <controls:PreviewPanel Grid.Row="0" Grid.Column="1"/>
-        <controls:ActionPanel Grid.Row="1" Grid.Column="1"/>
+        <controls:PreviewPanel x:Name="PreviewPanelControl" Grid.Row="0" Grid.Column="1"/>
+        <controls:ActionPanel x:Name="ActionPanelControl" Grid.Row="1" Grid.Column="1"/>
 
     </Grid>
 

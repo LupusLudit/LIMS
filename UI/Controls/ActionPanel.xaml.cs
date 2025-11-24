@@ -1,19 +1,8 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
+﻿using LIMS.Logic.ImageLoading;
+using Microsoft.Win32;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace LIMS.UI.Controls
 {
@@ -22,15 +11,15 @@ namespace LIMS.UI.Controls
     /// </summary>
     public partial class ActionPanel : UserControl
     {
+        public required PreviewPanel PreviewPanelReference { get; set; }
+        public List<ImageDataContainer> LoadedImages = new List<ImageDataContainer>();
+
+        private readonly string[] allowedExtensions = { ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tiff" };
+
         public ActionPanel()
         {
             InitializeComponent();
         }
-
-        private readonly string[] allowedExtensions = { ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tiff" };
-
-        public static HashSet<string> LoadedPaths = new HashSet<string>();
-
 
         public void OnImportFilesClick(object sender, RoutedEventArgs e)
         {
@@ -42,12 +31,8 @@ namespace LIMS.UI.Controls
 
             if (dialog.ShowDialog() == true)
             {
-                LoadedPaths = dialog.FileNames.ToHashSet();
-            }
-
-            foreach (string path in LoadedPaths)
-            {
-                System.Diagnostics.Debug.WriteLine(path);
+                LoadedImages = dialog.FileNames.Select(path => new ImageDataContainer(path)).ToList();
+                ShowLoadedImagesNamesInUI();
             }
         }
 
@@ -57,18 +42,22 @@ namespace LIMS.UI.Controls
 
             if (dialog.ShowDialog() == true)
             {
-                string? selectedFolder = System.IO.Path.GetDirectoryName(dialog.FolderName);
+                string? selectedFolder = Path.GetDirectoryName(dialog.FolderName);
                 if (selectedFolder != null)
                 {
-                    LoadedPaths = Directory.EnumerateFiles(selectedFolder)
-                        .Where(f => allowedExtensions.Contains(System.IO.Path.GetExtension(f).ToLower())).ToHashSet();
+                    LoadedImages = Directory.EnumerateFiles(selectedFolder)
+                        .Where(f => allowedExtensions.Contains(Path.GetExtension(f).ToLower()))
+                        .Select(path => new ImageDataContainer(path)).ToList();
+
+                    ShowLoadedImagesNamesInUI();
                 }
             }
+        }
 
-            foreach (string path in LoadedPaths)
-            {
-                System.Diagnostics.Debug.WriteLine(path);
-            }
+        private void ShowLoadedImagesNamesInUI()
+        {
+            HashSet<string> loadedPaths = LoadedImages.Select(i => i.FilePath).ToHashSet();
+            PreviewPanelReference.LoadImageNames(loadedPaths);
         }
 
     }
