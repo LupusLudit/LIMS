@@ -12,7 +12,6 @@ namespace LIMS.UI.Controls
     public partial class ActionPanel : UserControl
     {
         public required PreviewPanel PreviewPanelReference { get; set; }
-        public List<ImageDataContainer> LoadedImages = new List<ImageDataContainer>();
 
         private readonly string[] allowedExtensions = { ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tiff" };
 
@@ -21,7 +20,7 @@ namespace LIMS.UI.Controls
             InitializeComponent();
         }
 
-        public void OnImportFilesClick(object sender, RoutedEventArgs e)
+        public async void OnImportFilesClick(object sender, RoutedEventArgs e)
         {
             var dialog = new OpenFileDialog
             {
@@ -31,12 +30,13 @@ namespace LIMS.UI.Controls
 
             if (dialog.ShowDialog() == true)
             {
-                LoadedImages = dialog.FileNames.Select(path => new ImageDataContainer(path)).ToList();
-                ShowLoadedImagesNamesInUI();
+                await ImageLoader.LoadImagesAsync(dialog.FileNames);
+
+                SendPathsToPreviewPanel(dialog.FileNames);
             }
         }
 
-        public void OnImportFromFolderClick(object sender, RoutedEventArgs e)
+        public async void OnImportFromFolderClick(object sender, RoutedEventArgs e)
         {
             OpenFolderDialog dialog = new OpenFolderDialog();
 
@@ -45,19 +45,27 @@ namespace LIMS.UI.Controls
                 string? selectedFolder = Path.GetDirectoryName(dialog.FolderName);
                 if (selectedFolder != null)
                 {
-                    LoadedImages = Directory.EnumerateFiles(selectedFolder)
-                        .Where(f => allowedExtensions.Contains(Path.GetExtension(f).ToLower()))
-                        .Select(path => new ImageDataContainer(path)).ToList();
+                    List<string> loadedPaths = Directory.EnumerateFiles(selectedFolder)
+                        .Where(file => allowedExtensions.Contains(Path.GetExtension(file).ToLower())).ToList();
 
-                    ShowLoadedImagesNamesInUI();
+                    await ImageLoader.LoadImagesAsync(loadedPaths);
+                    
+                    SendPathsToPreviewPanel(loadedPaths);
                 }
             }
         }
 
-        private void ShowLoadedImagesNamesInUI()
+        public void OnStartButtonClick(object sender, RoutedEventArgs e)
         {
-            HashSet<string> loadedPaths = LoadedImages.Select(i => i.FilePath).ToHashSet();
-            PreviewPanelReference.LoadImageNames(loadedPaths);
+            throw new NotImplementedException();
+        }
+
+        private void SendPathsToPreviewPanel(IEnumerable<string> filePaths)
+        {
+            foreach (string path in filePaths)
+            {
+                PreviewPanelReference.AddImage(path);
+            }
         }
 
     }

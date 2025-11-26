@@ -7,15 +7,26 @@ namespace LIMS.UI.Controls
     /// </summary>
     public partial class PreviewPanel : UserControl
     {
+
+        private HashSet<string> filePaths = new HashSet<string>();
         public PreviewPanel()
         {
             InitializeComponent();
         }
 
-        public void LoadImageNames(HashSet<string> imagePaths)
+        private void LoadImageNamesIntoUI()
         {
-            ImageListBox.ItemsSource = imagePaths.Select(System.IO.Path.GetFileName);
+            ImageListBox.ItemsSource = filePaths.Select(System.IO.Path.GetFileName);
             ImageListBox.SelectedIndex = 0;
+        }
+
+        public void AddImage(string filePath)
+        {
+            if (filePath != null)
+            {
+                filePaths.Add(filePath);
+                LoadImageNamesIntoUI();
+            }
         }
     }
 }
