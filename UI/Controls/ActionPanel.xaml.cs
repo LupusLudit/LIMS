@@ -15,7 +15,17 @@ namespace LIMS.UI.Controls
     public partial class ActionPanel : UserControl
     {
         public required PreviewPanel PreviewPanelReference { get; set; }
-        public required TabContext TabContext { get; set; }
+
+        private TabContext? tabContext;
+        public required TabContext TabContext
+        {
+            get { return tabContext!; }
+            set
+            {
+                tabContext = value;
+            }
+        }
+
 
         public ActionPanel()
         {
@@ -26,13 +36,13 @@ namespace LIMS.UI.Controls
         {
             var dialog = new OpenFileDialog
             {
-                Filter = $"Image Files|*{string.Join(";*", TabContext.AllowedExtensions)}",
+                Filter = $"Image Files|*{string.Join(";*", tabContext!.AllowedExtensions)}",
                 Multiselect = true
             };
 
             if (dialog.ShowDialog() == true)
             {
-                await ImageLoader.LoadImagesAsync(dialog.FileNames, TabContext.Storage);
+                await ImageLoader.LoadImagesAsync(dialog.FileNames, tabContext.Storage);
 
                 SendPathsToPreviewPanel(dialog.FileNames);
             }
@@ -44,13 +54,13 @@ namespace LIMS.UI.Controls
 
             if (dialog.ShowDialog() == true)
             {
-                string? selectedFolder = Path.GetDirectoryName(dialog.FolderName);
+                string? selectedFolder = dialog.FolderName;
                 if (selectedFolder != null)
                 {
                     List<string> loadedPaths = Directory.EnumerateFiles(selectedFolder)
-                        .Where(file => TabContext.AllowedExtensions.Contains(Path.GetExtension(file).ToLower())).ToList();
+                        .Where(file => tabContext!.AllowedExtensions.Contains(Path.GetExtension(file).ToLower())).ToList();
 
-                    await ImageLoader.LoadImagesAsync(loadedPaths, TabContext.Storage);
+                    await ImageLoader.LoadImagesAsync(loadedPaths, tabContext!.Storage);
                     
                     SendPathsToPreviewPanel(loadedPaths);
                 }
@@ -60,7 +70,7 @@ namespace LIMS.UI.Controls
         public void OnStartButtonClick(object sender, RoutedEventArgs e)
         {
             string? errorMessage = null;
-            if (!TabContext.ToolsInValidStates(out errorMessage))
+            if (!tabContext.ToolsInValidStates(out errorMessage))
             {
                 MessageBox.Show(errorMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -72,13 +82,20 @@ namespace LIMS.UI.Controls
                 string destinationFolder = dialog.FolderName;
                 if (!string.IsNullOrEmpty(destinationFolder))
                 {
-                    TabContext.ProcessAllTools();
+                    tabContext.ProcessAllTools();
                     SaveAllImages(destinationFolder);
-                    TabContext.Storage.Clear();
+                    tabContext.Storage.Clear();
+                    PreviewPanelReference.ClearImages();
 
                     MessageBox.Show("Images exported successfully!", "Export Complete", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
+        }
+
+        public void OnClearButtonClick(object sender, RoutedEventArgs e)
+        {
+            tabContext!.Storage.Clear();
+            PreviewPanelReference.ClearImages();
         }
 
         private void SendPathsToPreviewPanel(IEnumerable<string> filePaths)
@@ -91,7 +108,7 @@ namespace LIMS.UI.Controls
 
         private void SaveAllImages(string folder)
         {
-            foreach (var img in TabContext.Storage.GetAllImages())
+            foreach (var img in tabContext!.Storage.GetAllImages())
             {
                 string fileName = Path.GetFileName(img.FilePath);
                 string destinationPath = Path.Combine(folder, fileName);

@@ -7,6 +7,15 @@ using System.IO;
 
 namespace LIMS.Logic.Tools
 {
+    public enum WatermarkPosition
+    {
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight,
+        Center,
+    }
+
     public class WatermarkTool : ToolBase
     {
         public string WatermarkPath
@@ -32,6 +41,8 @@ namespace LIMS.Logic.Tools
             } 
         }
 
+        public WatermarkPosition Position { get; set; } = WatermarkPosition.Center;
+
         private float opacity;
         private string? watermarkPath = null;
 
@@ -44,21 +55,68 @@ namespace LIMS.Logic.Tools
         {
             if (!Enabled || watermarkPath == null) return;
 
-            using (Image<Rgba32> original = Image.Load<Rgba32>(image.RawBytes))
-            using (Image<Rgba32> watermark = Image.Load<Rgba32>(watermarkPath))
+            using (Image<Rgba32> originalBaseImage = Image.Load<Rgba32>(image.RawBytes))
+            using (Image<Rgba32> originalWatermarkImage = Image.Load<Rgba32>(watermarkPath))
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                int x = (original.Width - watermark.Width) / 2;
-                int y = (original.Height - watermark.Height) / 2;
+                int maxWatermarkWidth = originalBaseImage.Width / 4;
+                int maxWatermarkHeight = originalBaseImage.Height / 4;
 
-                original.Mutate(context =>
+                float widthScalingFactor = (float)maxWatermarkWidth / originalWatermarkImage.Width;
+                float heightScalingFactor = (float)maxWatermarkHeight / originalWatermarkImage.Height;
+
+                float scalingFactor = Math.Min(widthScalingFactor, heightScalingFactor);
+
+                Image<Rgba32> watermark = originalWatermarkImage.Clone(context =>
+                {
+                    if (scalingFactor <= 1.0f)
+                    {
+                        int resizedWidth = (int) (originalWatermarkImage.Width * scalingFactor);
+                        int resizedHeight = (int)(originalWatermarkImage.Height * scalingFactor);
+                        context.Resize(resizedWidth, resizedHeight);
+                    }
+                });
+
+                int x = calculateWatermarkXPosition(originalBaseImage, watermark);
+                int y = calculateWatermarkYPosition(originalBaseImage, watermark);
+
+                originalBaseImage.Mutate(context =>
                 {
                     context.DrawImage(watermark, new Point(x, y), opacity);
                 });
 
-                original.SaveAsPng(memoryStream);
+                originalBaseImage.SaveAsPng(memoryStream);
                 image.RawBytes = memoryStream.ToArray();
             }
+        }
+
+
+        private int calculateWatermarkXPosition(Image<Rgba32> original, Image<Rgba32> watermark)
+        {
+            int x = Position switch
+            {
+                WatermarkPosition.TopLeft => 0,
+                WatermarkPosition.TopRight => original.Width - watermark.Width,
+                WatermarkPosition.BottomLeft => 0,
+                WatermarkPosition.BottomRight => original.Width - watermark.Width,
+                WatermarkPosition.Center => (original.Width - watermark.Width) / 2,
+                _ => 0
+            };
+            return x;
+        }
+
+        private int calculateWatermarkYPosition(Image<Rgba32> original, Image<Rgba32> watermark)
+        {
+            int y = Position switch
+            {
+                WatermarkPosition.TopLeft => 0,
+                WatermarkPosition.TopRight => 0,
+                WatermarkPosition.BottomLeft => original.Height - watermark.Height,
+                WatermarkPosition.BottomRight => original.Height - watermark.Height,
+                WatermarkPosition.Center => (original.Height - watermark.Height) / 2,
+                _ => 0
+            };
+            return y;
         }
 
         public override bool IsInValidState(out string? errorMessage)

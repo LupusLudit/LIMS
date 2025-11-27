@@ -13,7 +13,6 @@ namespace LIMS.Logic.ImageLoading
                 {
                     ImageDataContainer image = new ImageDataContainer(path);
                     image.RawBytes = await File.ReadAllBytesAsync(path);
-                    //TODO: Add preview image loading
 
                     storage.AddImage(image);
                 }

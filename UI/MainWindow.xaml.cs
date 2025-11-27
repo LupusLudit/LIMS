@@ -22,9 +22,11 @@ namespace LIMS.UI
 
             ActionPanelControl.PreviewPanelReference = PreviewPanelControl;
             ActionPanelControl.TabContext = tabContext;
+
+            ToolsPanelControl.PreviewPanelReference = PreviewPanelControl;
             ToolsPanelControl.TabContext = tabContext;
 
-
+            PreviewPanelControl.TabContext = tabContext;
         }
     }
 }

@@ -1,23 +1,40 @@
 ﻿using System.Windows.Controls;
+using LIMS.Logic;
+using LIMS.Logic.ImageLoading;
+using System.IO;
+using LIMS.Vendor;
+
 
 namespace LIMS.UI.Controls
 {
     /// <summary>
-    /// Interaction logic for PreviewPanel.xaml
+    /// /
     /// </summary>
+    /// <seealso cref="System.Windows.Controls.UserControl" />
+    /// <seealso cref="System.Windows.Markup.IComponentConnector" />
     public partial class PreviewPanel : UserControl
     {
-
         private HashSet<string> filePaths = new HashSet<string>();
+        private TabContext? tabContext;
+        public required TabContext TabContext
+        {
+            get { return tabContext!; }
+            set
+            {
+                tabContext = value;
+            }
+        }
+
         public PreviewPanel()
         {
             InitializeComponent();
+            ImageListBox.SelectionChanged += ImageSelectionChanged;
         }
 
         private void LoadImageNamesIntoUI()
         {
-            ImageListBox.ItemsSource = filePaths.Select(System.IO.Path.GetFileName);
-            ImageListBox.SelectedIndex = 0;
+            ImageListBox.ItemsSource = filePaths.Select(Path.GetFileName).ToList();
+            if (ImageListBox.Items.Count > 0) ImageListBox.SelectedIndex = 0;
         }
 
         public void AddImage(string filePath)
@@ -26,6 +43,50 @@ namespace LIMS.UI.Controls
             {
                 filePaths.Add(filePath);
                 LoadImageNamesIntoUI();
+            }
+        }
+
+        public void ClearImages()
+        {
+            filePaths.Clear();
+            LoadImageNamesIntoUI();
+            PreviewImage.Source = null;
+        }
+
+        public void RefreshPreview()
+        {
+            ImageSelectionChanged(this, null);
+        }
+
+        private void ImageSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ImageListBox.SelectedIndex >= 0 && tabContext != null)
+            {
+                string fileName = ImageListBox.SelectedItem.ToString()!;
+                string fullPath = filePaths.FirstOrDefault(f => Path.GetFileName(f) == fileName)!;
+
+                if (tabContext != null)
+                {
+                    tabContext.Storage.TryGetImage(fullPath, out ImageDataContainer? image);
+
+                    if (image != null && image.RawBytes != null)
+                    {
+                        byte[] previewBytes = (byte[])image.RawBytes.Clone();
+
+                        foreach (var tool in tabContext.ToolsManager.Tools)
+                        {
+                            if (tool.Enabled)
+                            {
+                                var temp = new ImageDataContainer(fullPath) { RawBytes = previewBytes };
+                                tool.Apply(temp);
+                                previewBytes = temp.RawBytes!;
+                            }
+                        }
+
+                        PreviewImage.Source = BitmapLoader.LoadBitmapImage(previewBytes);
+                    }
+
+                }
             }
         }
     }

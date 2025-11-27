@@ -5,7 +5,6 @@ namespace LIMS.Logic.Core
 {
     public class ToolProcessor
     {
-
         private readonly ToolsManager toolsManager;
         private readonly DataStorage storage;
 

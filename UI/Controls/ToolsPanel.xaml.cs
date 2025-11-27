@@ -1,8 +1,6 @@
 ﻿using LIMS.Logic;
-using LIMS.Logic.ImageLoading;
 using LIMS.Logic.Tools;
 using Microsoft.Win32;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -24,6 +22,8 @@ namespace LIMS.UI.Controls
             }
         }
 
+        public required PreviewPanel PreviewPanelReference { get; set; }
+
         private WatermarkTool? watermarkTool;
         public ToolsPanel()
         {
@@ -35,6 +35,7 @@ namespace LIMS.UI.Controls
             if (watermarkTool != null)
             {
                 watermarkTool.Enabled = true;
+                PreviewPanelReference?.RefreshPreview();
             }
         }
 
@@ -43,6 +44,7 @@ namespace LIMS.UI.Controls
             if (watermarkTool != null)
             {
                 watermarkTool.Enabled = false;
+                PreviewPanelReference?.RefreshPreview();
             }
         }
 
@@ -60,11 +62,45 @@ namespace LIMS.UI.Controls
             }
         }
 
+        private void WatermarkPositionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (watermarkTool != null && WatermarkPositionComboBox.SelectedItem is ComboBoxItem item)
+            {
+                string positionText = item.Content.ToString();
+
+                switch (positionText)
+                {
+                    case "Top-left":
+                        watermarkTool.Position = WatermarkPosition.TopLeft;
+                        break;
+                    case "Top-right":
+                        watermarkTool.Position = WatermarkPosition.TopRight;
+                        break;
+                    case "Bottom-left":
+                        watermarkTool.Position = WatermarkPosition.BottomLeft;
+                        break;
+                    case "Bottom-right":
+                        watermarkTool.Position = WatermarkPosition.BottomRight;
+                        break;
+                    case "Center":
+                        watermarkTool.Position = WatermarkPosition.Center;
+                        break;
+                    default:
+                        watermarkTool.Position = WatermarkPosition.Center;
+                        break;
+                }
+
+                PreviewPanelReference?.RefreshPreview();
+            }
+        }
+
+
         private void OpacitySliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (watermarkTool != null)
             {
-                watermarkTool.Opacity = (float)e.NewValue;    
+                watermarkTool.Opacity = (float)e.NewValue;
+                PreviewPanelReference?.RefreshPreview();
             }
         }
 
