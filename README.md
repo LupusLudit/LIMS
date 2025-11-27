@@ -11,31 +11,58 @@ Currently, the application supports applying watermarks to imported files, with 
 .
 ├── Logic/
 │   ├── Core/
-│   │   ├── Central Storage
-│   │   └── ...
+│   │   ├── DataStorage.cs
+│   │   └── ToolProcessor.cs
 │   ├── ImageLoading/
+│   │   ├── ImageDataContainer
 │   │   └── ...
-│   └── Tools/
-│       ├── ToolBase.cs
-│       └── ...
+│   ├── Tools/
+│   │   ├── ToolBase.cs
+│   │   ├── ToolsManager.cs
+│   │   └── ...
+│   └── TabContext.cs
 ├── UI/
 │   ├── Controls/
 │   │   ├── ActionPanel.xaml
-│   │   ├── PreviewPanel.xaml
-│   │   └── ToolsPanel.xaml
+│   │   └── ...
 │   └── MainWindow.xaml
-└── Propeties/
-    └── AssemblyInfo.cs
+├── Docs/
+│   ├── TechDocs.xml
+│   └── ...
+├── Propeties/
+│   └── AssemblyInfo.cs
+└── Vendor/
+    └── BitmapLoader.cs
 ```
-TODO: fill in the rest (info about each folder/file)
+* Logic/ – Contains the core application logic, including data handling, image processing, and tool management.
+    * Core/ – Core classes for data storage and processing of tools.
+    * ImageLoading/ – Classes and structures for loading and storing image data.
+    * Tools/ – Base classes and manager for image processing tools.
+* UI/ – Contains all user interface components.
+    * Controls/ –  UI controls and panels.
+* Docs/ – Technical and project documentation.
+* Propeties/ – Project properties and metadata.
+* Vendor/ – Third-party or external code used in the project.
 
 ## Requirements
-TODO: fill in
+- **C#** (version 11 or higher recommended)  
+- **.NET 8** or higher  
+- **WPF** (Windows Presentation Foundation) compatibility  
+- Optional (for code editing): Visual Studio 2022 or later for building from source
 
 ## Running the program
-TODO: fill in
+
+You can download the latest release of LIMS here: [v1.0.0](https://github.com/LupusLudit/LIMS/releases/tag/v.1.0.0)
+
+**To run the program:**  
+1. Download the compressed release files.  
+2. Extract the contents to a folder of your choice.  
+3. Locate and run the `LIMS.exe` file.  
+
+No installation is required. The program should run on any Windows system that meets the requirements.
 
 ## Notes
-TODO: edit
-! **This project is still in development** !
-This program is being used as a school project
+**!This project is still in development!**  
+LIMS is currently a work-in-progress and may contain bugs or incomplete features.  
+This program is also being developed as a school project.
+
