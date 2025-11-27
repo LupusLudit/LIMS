@@ -5,23 +5,23 @@ namespace LIMS.Logic.Core
 {
     public class ToolProcessor
     {
-        private readonly List<ToolBase> tools = new List<ToolBase>();
 
-        public void AddTool(ToolBase tool)
+        private readonly ToolsManager toolsManager;
+        private readonly DataStorage storage;
+
+        public ToolProcessor(ToolsManager toolsManager, DataStorage storage)
         {
-            if (tool != null && !tools.Contains(tool))
-            {
-                tools.Add(tool);
-            }
+            this.toolsManager = toolsManager;
+            this.storage = storage;
         }
 
         public void Run()
         {
-            List<ImageDataContainer> images = CentralStorage.Instance.GetAllImages();
+            List<ImageDataContainer> images = storage.GetAllImages();
 
             Parallel.ForEach(images, image =>
             {
-                foreach (ToolBase tool in tools)
+                foreach (ToolBase tool in toolsManager.Tools)
                 {
                     if (tool.Enabled)
                     {

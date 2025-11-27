@@ -18,8 +18,8 @@
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        
-        <controls:ToolsPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"/>
+
+        <controls:ToolsPanel x:Name="ToolsPanelControl" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"/>
         <controls:PreviewPanel x:Name="PreviewPanelControl" Grid.Row="0" Grid.Column="1"/>
         <controls:ActionPanel x:Name="ActionPanelControl" Grid.Row="1" Grid.Column="1"/>
 

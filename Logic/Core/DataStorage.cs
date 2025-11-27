@@ -1,22 +1,14 @@
 ﻿using LIMS.Logic.ImageLoading;
 
-
 namespace LIMS.Logic.Core
 {
-    public class CentralStorage
+    public class DataStorage
     {
-        private static Lazy<CentralStorage> instance = new Lazy<CentralStorage>(() => new CentralStorage());
-
-        public static CentralStorage Instance
-        { 
-            get { return instance.Value; }
-        }
-
         private readonly object lockObject = new object();
 
         private Dictionary<string, ImageDataContainer> images = new Dictionary<string, ImageDataContainer>();
 
-        CentralStorage() { }
+        public DataStorage() { }
 
         public void AddImage(ImageDataContainer image)
         {
@@ -34,6 +26,14 @@ namespace LIMS.Logic.Core
             lock (lockObject)
             {
                 images.TryGetValue(filePath, out image);
+            }
+        }
+
+        public void Clear()
+        {
+            lock (lockObject)
+            {
+                images.Clear();
             }
         }
 

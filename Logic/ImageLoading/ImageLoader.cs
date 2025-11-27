@@ -7,7 +7,7 @@ namespace LIMS.Logic.ImageLoading
     public static class ImageLoader
     {
 
-        public static async Task LoadImagesAsync(IEnumerable<string> filePaths)
+        public static async Task LoadImagesAsync(IEnumerable<string> filePaths, DataStorage storage)
         {
             IEnumerable<Task> tasks = filePaths.Select(path => Task.Run(async () =>
                 {
@@ -15,7 +15,7 @@ namespace LIMS.Logic.ImageLoading
                     image.RawBytes = await File.ReadAllBytesAsync(path);
                     //TODO: Add preview image loading
 
-                    CentralStorage.Instance.AddImage(image);
+                    storage.AddImage(image);
                 }
             ));
 

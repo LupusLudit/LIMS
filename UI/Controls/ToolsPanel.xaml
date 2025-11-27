@@ -14,13 +14,13 @@
 
                 <Expander Header="Watermark" IsExpanded="True">
                     <StackPanel Margin="10">
-                        <CheckBox Content="Enable Watermark" />
+                        <CheckBox Content="Enable Watermark" Checked="EnableWatermark" Unchecked="DisableWatermark"/>
 
                         <Label Content="Watermark File:" Margin="0,10,0,0"/>
-                        <Button Content="Browse..." Width="120" />
+                        <Button Content="Browse..." Width="120" Click="OnBrowseButtonClicked"/>
 
                         <Label Content="Opacity:" Margin="0,10,0,0"/>
-                        <Slider Minimum="0" Maximum="1" Value="0.7"/>
+                        <Slider Minimum="0" Maximum="1" Value="0.7" ValueChanged="OpacitySliderValueChanged"/>
                     </StackPanel>
                 </Expander>
 

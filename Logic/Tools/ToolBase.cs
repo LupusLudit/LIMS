@@ -6,5 +6,6 @@ namespace LIMS.Logic.Tools
         public bool Enabled { get; set; } = false;
         protected ToolBase() { }
         public abstract void Apply(ImageDataContainer image);
+        public abstract bool IsInValidState(out string? errorMessage);
     }
 }
