@@ -62,7 +62,8 @@ You can download the latest release of LIMS here: [v1.0.0](https://github.com/Lu
 No installation is required. The program should run on any Windows system that meets the requirements.
 
 ## Notes
-**!This project is still in development!**  
+**This project is still in development!**  
 LIMS is currently a work-in-progress and may contain bugs or incomplete features.  
-This program is also being developed as a school project.
+This program was developed as a school project.
+LICENSE:  GNU GENERAL PUBLIC LICENSE Version 2
 
