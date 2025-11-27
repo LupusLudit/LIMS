@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ClassDocs>
+	<ClassMembers name="DataStorage">
+		<summary>
+			Class responsible for storing and managing loaded image data in a thread-safe manner.
+			It maintains an internal dictionary of ImageDataContainer objects, indexed by file path,
+			and provides controlled access for adding, retrieving, clearing, and listing stored images.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="ToolProcessor">
+		<summary>
+			Class responsible for running enabled image-processing tools on all stored images.
+			It retrieves images from the DataStorage and applies each active ToolBase instance
+			from the ToolsManager in a parallelized manner to improve performance.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="ImageDataContainer">
+		<summary>
+			Class representing image data loaded from the file system.
+			It stores the source file path and optionally the raw byte content of the image.
+			Used as the primary data container for image processing operations.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="ImageLoader">
+		<summary>
+			Static class responsible for asynchronously loading image files from disk and storing
+			them into a <see cref="DataStorage"/> instance.
+			It reads raw image bytes and wraps them into <see cref="ImageDataContainer"/> objects, making them available for later processing.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="ToolBase">
+		<summary>
+			Abstract base class for all image-processing tools.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="ToolsManager">
+		<summary>
+			Class responsible for managing all image-processing tools in the system.
+			Provides functionality to register new tools and access the collection of registered tools.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="WatermarkTool">
+		<summary>
+			Tool that applies a watermark image onto target images.
+			Supports configurable watermark image path, opacity, and position.
+			Inherits from <see cref="ToolBase"/>.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="TabContext">
+		<summary>
+			Represents the context of a tab in the application, managing both image storage and associated image-processing tools.
+			Provides methods to execute tools and validate their states.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="ActionPanel">
+		<summary>
+			UserControl that provides actions for importing, processing, and exporting images.
+			Connects with <see cref="PreviewPanel"/> and <see cref="TabContext"/> to manage images and tools.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="PreviewPanel">
+		<summary>
+			UserControl that displays a list of imported images and shows a preview of the selected image.
+			Integrates with <see cref="TabContext"/> to apply tools and retrieve images.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="ToolsPanel">
+		<summary>
+			UserControl that manages tool settings and interactions for the current tab.
+			Connects with <see cref="TabContext"/> and <see cref="PreviewPanel"/> to enable/disable tools
+			and update previews in real-time.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="MainWindow">
+		<summary>
+			The main window of the LIMS application.
+			Manages the initialization and wiring of all panels, including <see cref="ActionPanel"/>,
+			<see cref="ToolsPanel"/>, and <see cref="PreviewPanel"/>.
+		</summary>
+	</ClassMembers>
+
+</ClassDocs>

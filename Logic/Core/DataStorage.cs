@@ -2,6 +2,7 @@
 
 namespace LIMS.Logic.Core
 {
+    /// <include file='../../Docs/LIMSClassesDocs.xml' path='ClassDocs/ClassMembers[@name="DataStorage"]/*'/>
     public class DataStorage
     {
         private readonly object lockObject = new object();
@@ -9,6 +10,15 @@ namespace LIMS.Logic.Core
         private Dictionary<string, ImageDataContainer> images = new Dictionary<string, ImageDataContainer>();
 
         public DataStorage() { }
+
+        /// <summary>
+        /// Adds an image to the storage (images dictionary) if it has not been added before.
+        /// </summary>
+        /// <param name="image">The <see cref="ImageDataContainer"/> instance to store.</param>
+        /// <remarks>
+        /// If an image with the same file path already exists, the method does nothing.
+        /// Thread-safe.
+        /// </remarks>
 
         public void AddImage(ImageDataContainer image)
         {
@@ -21,6 +31,14 @@ namespace LIMS.Logic.Core
             }
         }
 
+        /// <summary>
+        /// Attempts to retrieve an image from storage using its file path.
+        /// </summary>
+        /// <param name="filePath">The key used to find the stored image.</param>
+        /// <param name="image">The retrieved <see cref="ImageDataContainer"/> instance, or null if not found.</param>
+        /// <remarks>
+        /// Thread-safe.
+        /// </remarks>
         public void TryGetImage(string filePath, out ImageDataContainer? image)
         {
             lock (lockObject)
@@ -29,6 +47,12 @@ namespace LIMS.Logic.Core
             }
         }
 
+        /// <summary>
+        /// Removes all stored images from memory.
+        /// </summary>
+        /// <remarks>
+        /// Thread-safe.
+        /// </remarks>
         public void Clear()
         {
             lock (lockObject)
@@ -37,6 +61,13 @@ namespace LIMS.Logic.Core
             }
         }
 
+        /// <summary>
+        /// Retrieves a list of all stored images.
+        /// </summary>
+        /// <returns>A list containing all <see cref="ImageDataContainer"/> objects currently stored.</returns>
+        /// <remarks>
+        /// Thread-safe.
+        /// </remarks>
         public List<ImageDataContainer> GetAllImages()
         {
             lock (lockObject)

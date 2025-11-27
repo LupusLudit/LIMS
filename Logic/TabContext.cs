@@ -1,7 +1,9 @@
 ﻿using LIMS.Logic.Core;
 using LIMS.Logic.Tools;
+
 namespace LIMS.Logic
 {
+    /// <include file='../Docs/LIMSClassesDocs.xml' path='ClassDocs/ClassMembers[@name="TabContext"]/*'/>
     public class TabContext
     {
         private readonly string[] allowedExtensions = { ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tiff" };
@@ -9,12 +11,27 @@ namespace LIMS.Logic
         public ToolsManager ToolsManager { get; } = new ToolsManager();
         public string[] AllowedExtensions => allowedExtensions;
 
+        /// <summary>
+        /// Executes all enabled tools on all images stored in <see cref="Storage"/>.
+        /// </summary>
+        /// <remarks>
+        /// Internally creates a <see cref="ToolProcessor"/> and runs it.
+        /// </remarks>
         public void ProcessAllTools()
         {
             ToolProcessor processor = new ToolProcessor(ToolsManager, Storage);
             processor.Run();
         }
 
+        /// <summary>
+        /// Checks if all tools in <see cref="ToolsManager"/> are in valid states.
+        /// </summary>
+        /// <param name="errorMessage">
+        /// Outputs the error message of the first invalid tool encountered; otherwise <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if all tools are in valid states; otherwise <c>false</c>.
+        /// </returns>
         public bool ToolsInValidStates(out string? errorMessage)
         {
             foreach (ToolBase tool in ToolsManager.Tools)

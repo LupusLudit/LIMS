@@ -6,9 +6,7 @@ using System.Windows.Controls;
 
 namespace LIMS.UI.Controls
 {
-    /// <summary>
-    /// Interaction logic for ToolsPanel.xaml
-    /// </summary>
+    /// <include file='../../Docs/LIMSClassesDocs.xml' path='ClassDocs/ClassMembers[@name="ToolsPanel"]/*'/>
     public partial class ToolsPanel : UserControl
     {
         private TabContext? tabContext;
@@ -30,6 +28,9 @@ namespace LIMS.UI.Controls
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Enables the watermark tool and refreshes the preview.
+        /// </summary>
         private void EnableWatermark(object sender, RoutedEventArgs e)
         {
             if (watermarkTool != null)
@@ -39,6 +40,9 @@ namespace LIMS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Disables the watermark tool and refreshes the preview.
+        /// </summary>
         private void DisableWatermark(object sender, RoutedEventArgs e)
         {
             if (watermarkTool != null)
@@ -48,6 +52,11 @@ namespace LIMS.UI.Controls
             }
         }
 
+
+        /// <summary>
+        /// Handles the Browse button click to select a watermark image file.
+        /// Sets the selected file as the watermark path for <see cref="WatermarkTool"/>.
+        /// </summary>
         public void OnBrowseButtonClicked(object sender, RoutedEventArgs e)
         {
             var dialog = new OpenFileDialog
@@ -62,39 +71,32 @@ namespace LIMS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Handles changes in the watermark position ComboBox.
+        /// Updates <see cref="WatermarkTool.Position"/> and refreshes the preview.
+        /// </summary>
         private void WatermarkPositionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (watermarkTool != null && WatermarkPositionComboBox.SelectedItem is ComboBoxItem item)
             {
-                string positionText = item.Content.ToString();
-
-                switch (positionText)
+                watermarkTool.Position = item.Content.ToString() switch
                 {
-                    case "Top-left":
-                        watermarkTool.Position = WatermarkPosition.TopLeft;
-                        break;
-                    case "Top-right":
-                        watermarkTool.Position = WatermarkPosition.TopRight;
-                        break;
-                    case "Bottom-left":
-                        watermarkTool.Position = WatermarkPosition.BottomLeft;
-                        break;
-                    case "Bottom-right":
-                        watermarkTool.Position = WatermarkPosition.BottomRight;
-                        break;
-                    case "Center":
-                        watermarkTool.Position = WatermarkPosition.Center;
-                        break;
-                    default:
-                        watermarkTool.Position = WatermarkPosition.Center;
-                        break;
-                }
+                    "Top-left" => WatermarkPosition.TopLeft,
+                    "Top-right" => WatermarkPosition.TopRight,
+                    "Bottom-left" => WatermarkPosition.BottomLeft,
+                    "Bottom-right" => WatermarkPosition.BottomRight,
+                    "Center" => WatermarkPosition.Center,
+                    _ => WatermarkPosition.Center,
+                };
 
                 PreviewPanelReference?.RefreshPreview();
             }
         }
 
-
+        /// <summary>
+        /// Handles changes in the opacity slider.
+        /// Updates <see cref="WatermarkTool.Opacity"/> and refreshes the preview.
+        /// </summary>
         private void OpacitySliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (watermarkTool != null)

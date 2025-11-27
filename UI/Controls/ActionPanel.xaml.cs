@@ -1,17 +1,13 @@
 ﻿using LIMS.Logic;
 using LIMS.Logic.ImageLoading;
-using LIMS.Logic.Tools;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 
 namespace LIMS.UI.Controls
 {
-    /// <summary>
-    /// Interaction logic for ActionPanel.xaml
-    /// </summary>
+    /// <include file='../../Docs/LIMSClassesDocs.xml' path='ClassDocs/ClassMembers[@name="ActionPanel"]/*'/>
     public partial class ActionPanel : UserControl
     {
         public required PreviewPanel PreviewPanelReference { get; set; }
@@ -26,12 +22,16 @@ namespace LIMS.UI.Controls
             }
         }
 
-
         public ActionPanel()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Handles the click event for importing individual image files.
+        /// Opens a file dialog for user selection, loads the images into <see cref="TabContext.Storage"/>,
+        /// and updates the <see cref="PreviewPanel"/>.
+        /// </summary>
         public async void OnImportFilesClick(object sender, RoutedEventArgs e)
         {
             var dialog = new OpenFileDialog
@@ -48,6 +48,11 @@ namespace LIMS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Handles the click event for importing images from a folder.
+        /// Filters images by allowed extensions, loads them into <see cref="TabContext.Storage"/>,
+        /// and updates the <see cref="PreviewPanel"/>.
+        /// </summary>
         public async void OnImportFromFolderClick(object sender, RoutedEventArgs e)
         {
             OpenFolderDialog dialog = new OpenFolderDialog();
@@ -67,6 +72,11 @@ namespace LIMS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the Start button.
+        /// Validates tools, processes all images, saves them to the selected folder,
+        /// clears storage, and updates the preview panel.
+        /// </summary>
         public void OnStartButtonClick(object sender, RoutedEventArgs e)
         {
             string? errorMessage = null;
@@ -92,12 +102,20 @@ namespace LIMS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the Clear button.
+        /// Clears all images from <see cref="TabContext.Storage"/> and the <see cref="PreviewPanel"/>.
+        /// </summary>
         public void OnClearButtonClick(object sender, RoutedEventArgs e)
         {
             tabContext!.Storage.Clear();
             PreviewPanelReference.ClearImages();
         }
 
+        /// <summary>
+        /// Sends the paths of newly imported images to the <see cref="PreviewPanel"/> for display.
+        /// </summary>
+        /// <param name="filePaths">The paths of the images to add to the preview panel.</param>
         private void SendPathsToPreviewPanel(IEnumerable<string> filePaths)
         {
             foreach (string path in filePaths)
@@ -106,6 +124,10 @@ namespace LIMS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Saves all images currently stored in <see cref="TabContext.Storage"/> to the specified folder.
+        /// </summary>
+        /// <param name="folder">The destination folder where images will be saved.</param>
         private void SaveAllImages(string folder)
         {
             foreach (var img in tabContext!.Storage.GetAllImages())

@@ -16,6 +16,7 @@ namespace LIMS.Logic.Tools
         Center,
     }
 
+    /// <include file='../../Docs/LIMSClassesDocs.xml' path='ClassDocs/ClassMembers[@name="ToolsManager"]/*'/>
     public class WatermarkTool : ToolBase
     {
         public string WatermarkPath
@@ -51,6 +52,13 @@ namespace LIMS.Logic.Tools
             Opacity = 0.7f;
         }
 
+        /// <summary>
+        /// Applies the watermark to the provided <see cref="ImageDataContainer"/>.
+        /// </summary>
+        /// <param name="image">The target image on which the watermark should be applied.</param>
+        /// <remarks>
+        /// The watermark is resized proportionally to fit within a quarter of the target image.
+        /// </remarks>
         public override void Apply(ImageDataContainer image)
         {
             if (!Enabled || watermarkPath == null) return;
@@ -90,7 +98,12 @@ namespace LIMS.Logic.Tools
             }
         }
 
-
+        /// <summary>
+        /// Calculates the X coordinate for the watermark based on <see cref="Position"/>.
+        /// </summary>
+        /// <param name="original">The base image.</param>
+        /// <param name="watermark">The watermark image.</param>
+        /// <returns>The X coordinate where the watermark should be placed.</returns>
         private int calculateWatermarkXPosition(Image<Rgba32> original, Image<Rgba32> watermark)
         {
             int x = Position switch
@@ -105,6 +118,12 @@ namespace LIMS.Logic.Tools
             return x;
         }
 
+        /// <summary>
+        /// Calculates the Y coordinate for the watermark based on <see cref="Position"/>.
+        /// </summary>
+        /// <param name="original">The base image.</param>
+        /// <param name="watermark">The watermark image.</param>
+        /// <returns>The Y coordinate where the watermark should be placed.</returns>
         private int calculateWatermarkYPosition(Image<Rgba32> original, Image<Rgba32> watermark)
         {
             int y = Position switch
@@ -119,6 +138,15 @@ namespace LIMS.Logic.Tools
             return y;
         }
 
+
+        /// <summary>
+        /// Checks whether the tool is in a valid state for execution.
+        /// </summary>
+        /// <param name="errorMessage"> Outputs an error message if the tool is not ready; otherwise <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the tool is enabled and a watermark path has been set; otherwise <c>false</c>.
+        /// </returns>
         public override bool IsInValidState(out string? errorMessage)
         {
             if (!Enabled || (Enabled && !string.IsNullOrEmpty(watermarkPath))) 

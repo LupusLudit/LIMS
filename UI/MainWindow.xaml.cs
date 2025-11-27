@@ -3,9 +3,8 @@ using System.Windows;
 
 namespace LIMS.UI
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    /// <include file='../Docs/LIMSClassesDocs.xml' path='ClassDocs/ClassMembers[@name="MainWindow"]/*'/>
+
     public partial class MainWindow : Window
     {
 

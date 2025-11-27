@@ -1,5 +1,6 @@
 ﻿namespace LIMS.Logic.ImageLoading
 {
+    /// <include file='../../Docs/LIMSClassesDocs.xml' path='ClassDocs/ClassMembers[@name="ImageDataContainer"]/*'/>
     public class ImageDataContainer
     {
         public string FilePath { get; }

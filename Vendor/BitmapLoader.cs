@@ -7,14 +7,15 @@ namespace LIMS.Vendor
     /// This class contains externally sourced (non-authored) code.
     /// </summary>
     public static class BitmapLoader
-    {
-        // Copied / adapted from StackOverflow – isolated per project rules        
+    {   
         /// <summary>
         /// Copied / adapted from StackOverflow – isolated to satisfy the project rules: https://stackoverflow.com/questions/5346727/convert-memory-stream-to-bitmapimage
         /// Loads the bitmap image.
         /// </summary>
         /// <param name="imageBytes">The image bytes.</param>
-        /// <returns></returns>
+        /// <returns>
+        /// The bitmap image.
+        /// </returns>
         public static BitmapImage LoadBitmapImage(byte[] imageBytes)
         {
             using (MemoryStream memoryStream = new MemoryStream(imageBytes))

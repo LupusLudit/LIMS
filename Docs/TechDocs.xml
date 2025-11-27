@@ -1,0 +1,367 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LIMS</name>
+    </assembly>
+    <members>
+        <member name="T:LIMS.App">
+            <summary>
+            Interaction logic for App.xaml
+            </summary>
+            <summary>
+            App
+            </summary>
+        </member>
+        <member name="M:LIMS.App.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="M:LIMS.App.Main">
+            <summary>
+            Application Entry Point.
+            </summary>
+        </member>
+        <member name="T:LIMS.Logic.Core.DataStorage">
+            <summary>
+			Class responsible for storing and managing loaded image data in a thread-safe manner.
+			It maintains an internal dictionary of ImageDataContainer objects, indexed by file path,
+			and provides controlled access for adding, retrieving, clearing, and listing stored images.
+		</summary>
+        </member>
+        <member name="M:LIMS.Logic.Core.DataStorage.AddImage(LIMS.Logic.ImageLoading.ImageDataContainer)">
+            <summary>
+            Adds an image to the storage (images dictionary) if it has not been added before.
+            </summary>
+            <param name="image">The <see cref="T:LIMS.Logic.ImageLoading.ImageDataContainer"/> instance to store.</param>
+            <remarks>
+            If an image with the same file path already exists, the method does nothing.
+            Thread-safe.
+            </remarks>
+        </member>
+        <member name="M:LIMS.Logic.Core.DataStorage.TryGetImage(System.String,LIMS.Logic.ImageLoading.ImageDataContainer@)">
+            <summary>
+            Attempts to retrieve an image from storage using its file path.
+            </summary>
+            <param name="filePath">The key used to find the stored image.</param>
+            <param name="image">The retrieved <see cref="T:LIMS.Logic.ImageLoading.ImageDataContainer"/> instance, or null if not found.</param>
+            <remarks>
+            Thread-safe.
+            </remarks>
+        </member>
+        <member name="M:LIMS.Logic.Core.DataStorage.Clear">
+            <summary>
+            Removes all stored images from memory.
+            </summary>
+            <remarks>
+            Thread-safe.
+            </remarks>
+        </member>
+        <member name="M:LIMS.Logic.Core.DataStorage.GetAllImages">
+            <summary>
+            Retrieves a list of all stored images.
+            </summary>
+            <returns>A list containing all <see cref="T:LIMS.Logic.ImageLoading.ImageDataContainer"/> objects currently stored.</returns>
+            <remarks>
+            Thread-safe.
+            </remarks>
+        </member>
+        <member name="T:LIMS.Logic.Core.ToolProcessor">
+            <summary>
+			Class responsible for running enabled image-processing tools on all stored images.
+			It retrieves images from the DataStorage and applies each active ToolBase instance
+			from the ToolsManager in a parallelized manner to improve performance.
+		</summary>
+        </member>
+        <member name="M:LIMS.Logic.Core.ToolProcessor.Run">
+            <summary>
+            Executes all enabled tools on every image currently stored in <see cref="T:LIMS.Logic.Core.DataStorage"/>.
+            </summary>
+            <remarks>
+            The processing is performed in parallel for improved efficiency.
+            Each enabled tool in <see cref="P:LIMS.Logic.Tools.ToolsManager.Tools"/> is applied to each image.
+            </remarks>
+        </member>
+        <member name="T:LIMS.Logic.ImageLoading.ImageDataContainer">
+            <summary>
+			Class representing image data loaded from the file system.
+			It stores the source file path and optionally the raw byte content of the image.
+			Used as the primary data container for image processing operations.
+		</summary>
+        </member>
+        <member name="T:LIMS.Logic.ImageLoading.ImageLoader">
+            <summary>
+			Static class responsible for asynchronously loading image files from disk and storing
+			them into a <see cref="T:LIMS.Logic.Core.DataStorage" /> instance.
+			It reads raw image bytes and wraps them into <see cref="T:LIMS.Logic.ImageLoading.ImageDataContainer" /> objects, making them available for later processing.
+		</summary>
+        </member>
+        <member name="M:LIMS.Logic.ImageLoading.ImageLoader.LoadImagesAsync(System.Collections.Generic.IEnumerable{System.String},LIMS.Logic.Core.DataStorage)">
+            <summary>
+            Asynchronously loads raw bytes from multiple image files and stores them in the provided <see cref="T:LIMS.Logic.Core.DataStorage"/> instance.
+            </summary>
+            <param name="filePaths"> A collection of file system paths pointing to image files.</param>
+            <param name="storage"> The <see cref="T:LIMS.Logic.Core.DataStorage"/> used to store loaded <see cref="T:LIMS.Logic.ImageLoading.ImageDataContainer"/> objects.</param>
+            <remarks>
+            Each image is loaded in a separate task to improve performance.
+            </remarks>
+        </member>
+        <member name="T:LIMS.Logic.TabContext">
+            <summary>
+			Represents the context of a tab in the application, managing both image storage and associated image-processing tools.
+			Provides methods to execute tools and validate their states.
+		</summary>
+        </member>
+        <member name="M:LIMS.Logic.TabContext.ProcessAllTools">
+            <summary>
+            Executes all enabled tools on all images stored in <see cref="P:LIMS.Logic.TabContext.Storage"/>.
+            </summary>
+            <remarks>
+            Internally creates a <see cref="T:LIMS.Logic.Core.ToolProcessor"/> and runs it.
+            </remarks>
+        </member>
+        <member name="M:LIMS.Logic.TabContext.ToolsInValidStates(System.String@)">
+            <summary>
+            Checks if all tools in <see cref="P:LIMS.Logic.TabContext.ToolsManager"/> are in valid states.
+            </summary>
+            <param name="errorMessage">
+            Outputs the error message of the first invalid tool encountered; otherwise <c>null</c>.
+            </param>
+            <returns>
+            <c>true</c> if all tools are in valid states; otherwise <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:LIMS.Logic.Tools.ToolBase">
+            <summary>
+			Abstract base class for all image-processing tools.
+		</summary>
+        </member>
+        <member name="T:LIMS.Logic.Tools.ToolsManager">
+            <summary>
+			Class responsible for managing all image-processing tools in the system.
+			Provides functionality to register new tools and access the collection of registered tools.
+		</summary>
+        </member>
+        <member name="M:LIMS.Logic.Tools.ToolsManager.RegisterTool``1(``0)">
+            <summary>
+            Registers a new tool to the manager if it is not already registered.
+            </summary>
+            <typeparam name="T">The type of the tool, derived from <see cref="T:LIMS.Logic.Tools.ToolBase"/>.</typeparam>
+            <param name="tool">The tool instance to register.</param>
+            <returns>
+            The registered tool if it was successfully added; otherwise <c>null</c>
+            </returns>
+        </member>
+        <member name="T:LIMS.Logic.Tools.WatermarkTool">
+            <summary>
+			Class responsible for managing all image-processing tools in the system.
+			Provides functionality to register new tools and access the collection of registered tools.
+		</summary>
+        </member>
+        <member name="M:LIMS.Logic.Tools.WatermarkTool.Apply(LIMS.Logic.ImageLoading.ImageDataContainer)">
+            <summary>
+            Applies the watermark to the provided <see cref="T:LIMS.Logic.ImageLoading.ImageDataContainer"/>.
+            </summary>
+            <param name="image">The target image on which the watermark should be applied.</param>
+            <remarks>
+            The watermark is resized proportionally to fit within a quarter of the target image.
+            </remarks>
+        </member>
+        <member name="M:LIMS.Logic.Tools.WatermarkTool.calculateWatermarkXPosition(SixLabors.ImageSharp.Image{SixLabors.ImageSharp.PixelFormats.Rgba32},SixLabors.ImageSharp.Image{SixLabors.ImageSharp.PixelFormats.Rgba32})">
+            <summary>
+            Calculates the X coordinate for the watermark based on <see cref="P:LIMS.Logic.Tools.WatermarkTool.Position"/>.
+            </summary>
+            <param name="original">The base image.</param>
+            <param name="watermark">The watermark image.</param>
+            <returns>The X coordinate where the watermark should be placed.</returns>
+        </member>
+        <member name="M:LIMS.Logic.Tools.WatermarkTool.calculateWatermarkYPosition(SixLabors.ImageSharp.Image{SixLabors.ImageSharp.PixelFormats.Rgba32},SixLabors.ImageSharp.Image{SixLabors.ImageSharp.PixelFormats.Rgba32})">
+            <summary>
+            Calculates the Y coordinate for the watermark based on <see cref="P:LIMS.Logic.Tools.WatermarkTool.Position"/>.
+            </summary>
+            <param name="original">The base image.</param>
+            <param name="watermark">The watermark image.</param>
+            <returns>The Y coordinate where the watermark should be placed.</returns>
+        </member>
+        <member name="M:LIMS.Logic.Tools.WatermarkTool.IsInValidState(System.String@)">
+            <summary>
+            Checks whether the tool is in a valid state for execution.
+            </summary>
+            <param name="errorMessage"> Outputs an error message if the tool is not ready; otherwise <c>null</c>.
+            </param>
+            <returns>
+            <c>true</c> if the tool is enabled and a watermark path has been set; otherwise <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:LIMS.UI.Controls.ActionPanel">
+            <summary>
+			UserControl that provides actions for importing, processing, and exporting images.
+			Connects with <see cref="T:LIMS.UI.Controls.PreviewPanel" /> and <see cref="P:LIMS.UI.Controls.ActionPanel.TabContext" /> to manage images and tools.
+		</summary>
+            <summary>
+            ActionPanel
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.ActionPanel.OnImportFilesClick(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles the click event for importing individual image files.
+            Opens a file dialog for user selection, loads the images into <see cref="P:LIMS.Logic.TabContext.Storage"/>,
+            and updates the <see cref="T:LIMS.UI.Controls.PreviewPanel"/>.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.ActionPanel.OnImportFromFolderClick(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles the click event for importing images from a folder.
+            Filters images by allowed extensions, loads them into <see cref="P:LIMS.Logic.TabContext.Storage"/>,
+            and updates the <see cref="T:LIMS.UI.Controls.PreviewPanel"/>.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.ActionPanel.OnStartButtonClick(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the Start button.
+            Validates tools, processes all images, saves them to the selected folder,
+            clears storage, and updates the preview panel.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.ActionPanel.OnClearButtonClick(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles the click event for the Clear button.
+            Clears all images from <see cref="P:LIMS.Logic.TabContext.Storage"/> and the <see cref="T:LIMS.UI.Controls.PreviewPanel"/>.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.ActionPanel.SendPathsToPreviewPanel(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Sends the paths of newly imported images to the <see cref="T:LIMS.UI.Controls.PreviewPanel"/> for display.
+            </summary>
+            <param name="filePaths">The paths of the images to add to the preview panel.</param>
+        </member>
+        <member name="M:LIMS.UI.Controls.ActionPanel.SaveAllImages(System.String)">
+            <summary>
+            Saves all images currently stored in <see cref="P:LIMS.Logic.TabContext.Storage"/> to the specified folder.
+            </summary>
+            <param name="folder">The destination folder where images will be saved.</param>
+        </member>
+        <member name="M:LIMS.UI.Controls.ActionPanel.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:LIMS.UI.Controls.PreviewPanel">
+            <summary>
+			UserControl that displays a list of imported images and shows a preview of the selected image.
+			Integrates with <see cref="P:LIMS.UI.Controls.PreviewPanel.TabContext" /> to apply tools and retrieve images.
+		</summary>
+            <summary>
+            PreviewPanel
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.PreviewPanel.LoadImageNamesIntoUI">
+            <summary>
+            Updates the UI list with the names of the currently loaded images.
+            Automatically selects the first image if any exist.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.PreviewPanel.AddImage(System.String)">
+            <summary>
+            Adds an image to the preview panel and updates the UI list.
+            </summary>
+            <param name="filePath">The full file path of the image to add.</param>
+        </member>
+        <member name="M:LIMS.UI.Controls.PreviewPanel.ClearImages">
+            <summary>
+            Clears all images from the panel and resets the preview display.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.PreviewPanel.RefreshPreview">
+            <summary>
+            Refreshes the preview image by re-applying all enabled tools to the currently selected image.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.PreviewPanel.ImageSelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Handles the selection change in the image list and updates the preview image.
+            Applies all enabled tools from <see cref="P:LIMS.Logic.TabContext.ToolsManager"/> to the selected image.
+            </summary>
+            <param name="sender">The source of the selection change event.</param>
+            <param name="e">The selection changed event arguments.</param>
+        </member>
+        <member name="M:LIMS.UI.Controls.PreviewPanel.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:LIMS.UI.Controls.ToolsPanel">
+            <summary>
+			UserControl that manages tool settings and interactions for the current tab.
+			Connects with <see cref="P:LIMS.UI.Controls.ToolsPanel.TabContext" /> and <see cref="T:LIMS.UI.Controls.PreviewPanel" /> to enable/disable tools
+			and update previews in real-time.
+		</summary>
+            <summary>
+            ToolsPanel
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.ToolsPanel.EnableWatermark(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Enables the watermark tool and refreshes the preview.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.ToolsPanel.DisableWatermark(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Disables the watermark tool and refreshes the preview.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.ToolsPanel.OnBrowseButtonClicked(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles the Browse button click to select a watermark image file.
+            Sets the selected file as the watermark path for <see cref="T:LIMS.Logic.Tools.WatermarkTool"/>.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.ToolsPanel.WatermarkPositionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Handles changes in the watermark position ComboBox.
+            Updates <see cref="P:LIMS.Logic.Tools.WatermarkTool.Position"/> and refreshes the preview.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.ToolsPanel.OpacitySliderValueChanged(System.Object,System.Windows.RoutedPropertyChangedEventArgs{System.Double})">
+            <summary>
+            Handles changes in the opacity slider.
+            Updates <see cref="P:LIMS.Logic.Tools.WatermarkTool.Opacity"/> and refreshes the preview.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Controls.ToolsPanel.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:LIMS.UI.MainWindow">
+            <summary>
+			The main window of the LIMS application.
+			Manages the initialization and wiring of all panels, including <see cref="!:ActionPanel" />,
+			<see cref="!:ToolsPanel" />, and <see cref="!:PreviewPanel" />.
+		</summary>
+            <summary>
+            MainWindow
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.MainWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:LIMS.Vendor.BitmapLoader">
+            <summary>
+            This class contains externally sourced (non-authored) code.
+            </summary>
+        </member>
+        <member name="M:LIMS.Vendor.BitmapLoader.LoadBitmapImage(System.Byte[])">
+            <summary>
+            Copied / adapted from StackOverflow – isolated to satisfy the project rules: https://stackoverflow.com/questions/5346727/convert-memory-stream-to-bitmapimage
+            Loads the bitmap image.
+            </summary>
+            <param name="imageBytes">The image bytes.</param>
+            <returns>
+            The bitmap image.
+            </returns>
+        </member>
+    </members>
+</doc>
