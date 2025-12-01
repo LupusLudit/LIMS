@@ -5,7 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace LIMS.UI.Controls
+namespace LIMS.UI.Panels
 {
     /// <include file='../../Docs/LIMSClassesDocs.xml' path='ClassDocs/ClassMembers[@name="ActionPanel"]/*'/>
     public partial class ActionPanel : UserControl

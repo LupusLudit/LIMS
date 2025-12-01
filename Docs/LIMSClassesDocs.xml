@@ -90,4 +90,12 @@
 		</summary>
 	</ClassMembers>
 
+	<ClassMembers name="HeaderPanel">
+		<summary>
+			UserControl that represents the header section of the LIMS application interface.
+			Provides buttons for accessing preferences and zoom controls.
+			Handles opening of the preferences menu and placeholder methods for zooming in and out.
+		</summary>
+	</ClassMembers>
+
 </ClassDocs>

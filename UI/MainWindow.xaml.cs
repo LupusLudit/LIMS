@@ -1,10 +1,10 @@
 ﻿using LIMS.Logic;
 using System.Windows;
+using LIMS.UI.Panels;
 
 namespace LIMS.UI
 {
     /// <include file='../Docs/LIMSClassesDocs.xml' path='ClassDocs/ClassMembers[@name="MainWindow"]/*'/>
-
     public partial class MainWindow : Window
     {
 
@@ -27,5 +27,6 @@ namespace LIMS.UI
 
             PreviewPanelControl.TabContext = tabContext;
         }
+
     }
 }

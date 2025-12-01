@@ -193,91 +193,121 @@
             <c>true</c> if the tool is enabled and a watermark path has been set; otherwise <c>false</c>.
             </returns>
         </member>
-        <member name="T:LIMS.UI.Controls.ActionPanel">
+        <member name="T:LIMS.UI.MainWindow">
+            <summary>
+			The main window of the LIMS application.
+			Manages the initialization and wiring of all panels, including <see cref="T:LIMS.UI.Panels.ActionPanel" />,
+			<see cref="T:LIMS.UI.Panels.ToolsPanel" />, and <see cref="T:LIMS.UI.Panels.PreviewPanel" />.
+		</summary>
+            <summary>
+            MainWindow
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.MainWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:LIMS.UI.Panels.ActionPanel">
             <summary>
 			UserControl that provides actions for importing, processing, and exporting images.
-			Connects with <see cref="T:LIMS.UI.Controls.PreviewPanel" /> and <see cref="P:LIMS.UI.Controls.ActionPanel.TabContext" /> to manage images and tools.
+			Connects with <see cref="T:LIMS.UI.Panels.PreviewPanel" /> and <see cref="P:LIMS.UI.Panels.ActionPanel.TabContext" /> to manage images and tools.
 		</summary>
             <summary>
             ActionPanel
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.ActionPanel.OnImportFilesClick(System.Object,System.Windows.RoutedEventArgs)">
+        <member name="M:LIMS.UI.Panels.ActionPanel.OnImportFilesClick(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Handles the click event for importing individual image files.
             Opens a file dialog for user selection, loads the images into <see cref="P:LIMS.Logic.TabContext.Storage"/>,
-            and updates the <see cref="T:LIMS.UI.Controls.PreviewPanel"/>.
+            and updates the <see cref="T:LIMS.UI.Panels.PreviewPanel"/>.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.ActionPanel.OnImportFromFolderClick(System.Object,System.Windows.RoutedEventArgs)">
+        <member name="M:LIMS.UI.Panels.ActionPanel.OnImportFromFolderClick(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Handles the click event for importing images from a folder.
             Filters images by allowed extensions, loads them into <see cref="P:LIMS.Logic.TabContext.Storage"/>,
-            and updates the <see cref="T:LIMS.UI.Controls.PreviewPanel"/>.
+            and updates the <see cref="T:LIMS.UI.Panels.PreviewPanel"/>.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.ActionPanel.OnStartButtonClick(System.Object,System.Windows.RoutedEventArgs)">
+        <member name="M:LIMS.UI.Panels.ActionPanel.OnStartButtonClick(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Handles the click event for the Start button.
             Validates tools, processes all images, saves them to the selected folder,
             clears storage, and updates the preview panel.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.ActionPanel.OnClearButtonClick(System.Object,System.Windows.RoutedEventArgs)">
+        <member name="M:LIMS.UI.Panels.ActionPanel.OnClearButtonClick(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Handles the click event for the Clear button.
-            Clears all images from <see cref="P:LIMS.Logic.TabContext.Storage"/> and the <see cref="T:LIMS.UI.Controls.PreviewPanel"/>.
+            Clears all images from <see cref="P:LIMS.Logic.TabContext.Storage"/> and the <see cref="T:LIMS.UI.Panels.PreviewPanel"/>.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.ActionPanel.SendPathsToPreviewPanel(System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:LIMS.UI.Panels.ActionPanel.SendPathsToPreviewPanel(System.Collections.Generic.IEnumerable{System.String})">
             <summary>
-            Sends the paths of newly imported images to the <see cref="T:LIMS.UI.Controls.PreviewPanel"/> for display.
+            Sends the paths of newly imported images to the <see cref="T:LIMS.UI.Panels.PreviewPanel"/> for display.
             </summary>
             <param name="filePaths">The paths of the images to add to the preview panel.</param>
         </member>
-        <member name="M:LIMS.UI.Controls.ActionPanel.SaveAllImages(System.String)">
+        <member name="M:LIMS.UI.Panels.ActionPanel.SaveAllImages(System.String)">
             <summary>
             Saves all images currently stored in <see cref="P:LIMS.Logic.TabContext.Storage"/> to the specified folder.
             </summary>
             <param name="folder">The destination folder where images will be saved.</param>
         </member>
-        <member name="M:LIMS.UI.Controls.ActionPanel.InitializeComponent">
+        <member name="M:LIMS.UI.Panels.ActionPanel.InitializeComponent">
             <summary>
             InitializeComponent
             </summary>
         </member>
-        <member name="T:LIMS.UI.Controls.PreviewPanel">
+        <member name="T:LIMS.UI.Panels.HeaderPanel">
+            <summary>
+			UserControl that represents the header section of the LIMS application interface.
+			Provides buttons for accessing preferences and zoom controls.
+			Handles opening of the preferences menu and placeholder methods for zooming in and out.
+		</summary>
+            <summary>
+            HeaderPanel
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Panels.HeaderPanel.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:LIMS.UI.Panels.PreviewPanel">
             <summary>
 			UserControl that displays a list of imported images and shows a preview of the selected image.
-			Integrates with <see cref="P:LIMS.UI.Controls.PreviewPanel.TabContext" /> to apply tools and retrieve images.
+			Integrates with <see cref="P:LIMS.UI.Panels.PreviewPanel.TabContext" /> to apply tools and retrieve images.
 		</summary>
             <summary>
             PreviewPanel
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.PreviewPanel.LoadImageNamesIntoUI">
+        <member name="M:LIMS.UI.Panels.PreviewPanel.LoadImageNamesIntoUI">
             <summary>
             Updates the UI list with the names of the currently loaded images.
             Automatically selects the first image if any exist.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.PreviewPanel.AddImage(System.String)">
+        <member name="M:LIMS.UI.Panels.PreviewPanel.AddImage(System.String)">
             <summary>
             Adds an image to the preview panel and updates the UI list.
             </summary>
             <param name="filePath">The full file path of the image to add.</param>
         </member>
-        <member name="M:LIMS.UI.Controls.PreviewPanel.ClearImages">
+        <member name="M:LIMS.UI.Panels.PreviewPanel.ClearImages">
             <summary>
             Clears all images from the panel and resets the preview display.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.PreviewPanel.RefreshPreview">
+        <member name="M:LIMS.UI.Panels.PreviewPanel.RefreshPreview">
             <summary>
             Refreshes the preview image by re-applying all enabled tools to the currently selected image.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.PreviewPanel.ImageSelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+        <member name="M:LIMS.UI.Panels.PreviewPanel.ImageSelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
             <summary>
             Handles the selection change in the image list and updates the preview image.
             Applies all enabled tools from <see cref="P:LIMS.Logic.TabContext.ToolsManager"/> to the selected image.
@@ -285,65 +315,50 @@
             <param name="sender">The source of the selection change event.</param>
             <param name="e">The selection changed event arguments.</param>
         </member>
-        <member name="M:LIMS.UI.Controls.PreviewPanel.InitializeComponent">
+        <member name="M:LIMS.UI.Panels.PreviewPanel.InitializeComponent">
             <summary>
             InitializeComponent
             </summary>
         </member>
-        <member name="T:LIMS.UI.Controls.ToolsPanel">
+        <member name="T:LIMS.UI.Panels.ToolsPanel">
             <summary>
 			UserControl that manages tool settings and interactions for the current tab.
-			Connects with <see cref="P:LIMS.UI.Controls.ToolsPanel.TabContext" /> and <see cref="T:LIMS.UI.Controls.PreviewPanel" /> to enable/disable tools
+			Connects with <see cref="P:LIMS.UI.Panels.ToolsPanel.TabContext" /> and <see cref="T:LIMS.UI.Panels.PreviewPanel" /> to enable/disable tools
 			and update previews in real-time.
 		</summary>
             <summary>
             ToolsPanel
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.ToolsPanel.EnableWatermark(System.Object,System.Windows.RoutedEventArgs)">
+        <member name="M:LIMS.UI.Panels.ToolsPanel.EnableWatermark(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Enables the watermark tool and refreshes the preview.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.ToolsPanel.DisableWatermark(System.Object,System.Windows.RoutedEventArgs)">
+        <member name="M:LIMS.UI.Panels.ToolsPanel.DisableWatermark(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Disables the watermark tool and refreshes the preview.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.ToolsPanel.OnBrowseButtonClicked(System.Object,System.Windows.RoutedEventArgs)">
+        <member name="M:LIMS.UI.Panels.ToolsPanel.OnBrowseButtonClicked(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Handles the Browse button click to select a watermark image file.
             Sets the selected file as the watermark path for <see cref="T:LIMS.Logic.Tools.WatermarkTool"/>.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.ToolsPanel.WatermarkPositionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+        <member name="M:LIMS.UI.Panels.ToolsPanel.WatermarkPositionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
             <summary>
             Handles changes in the watermark position ComboBox.
             Updates <see cref="P:LIMS.Logic.Tools.WatermarkTool.Position"/> and refreshes the preview.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.ToolsPanel.OpacitySliderValueChanged(System.Object,System.Windows.RoutedPropertyChangedEventArgs{System.Double})">
+        <member name="M:LIMS.UI.Panels.ToolsPanel.OpacitySliderValueChanged(System.Object,System.Windows.RoutedPropertyChangedEventArgs{System.Double})">
             <summary>
             Handles changes in the opacity slider.
             Updates <see cref="P:LIMS.Logic.Tools.WatermarkTool.Opacity"/> and refreshes the preview.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Controls.ToolsPanel.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
-        <member name="T:LIMS.UI.MainWindow">
-            <summary>
-			The main window of the LIMS application.
-			Manages the initialization and wiring of all panels, including <see cref="!:ActionPanel" />,
-			<see cref="!:ToolsPanel" />, and <see cref="!:PreviewPanel" />.
-		</summary>
-            <summary>
-            MainWindow
-            </summary>
-        </member>
-        <member name="M:LIMS.UI.MainWindow.InitializeComponent">
+        <member name="M:LIMS.UI.Panels.ToolsPanel.InitializeComponent">
             <summary>
             InitializeComponent
             </summary>
@@ -362,6 +377,36 @@
             <returns>
             The bitmap image.
             </returns>
+        </member>
+        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+            <summary>
+            GeneratedInternalTypeHelper
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            CreateInstance
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            GetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            SetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+            <summary>
+            CreateDelegate
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+            <summary>
+            AddEventHandler
+            </summary>
         </member>
     </members>
 </doc>

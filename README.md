@@ -22,7 +22,7 @@ Currently, the application supports applying watermarks to imported files, with 
 │   │   └── ...
 │   └── TabContext.cs
 ├── UI/
-│   ├── Controls/
+│   ├── Panels/
 │   │   ├── ActionPanel.xaml
 │   │   └── ...
 │   └── MainWindow.xaml
@@ -39,7 +39,7 @@ Currently, the application supports applying watermarks to imported files, with 
     * ImageLoading/ – Classes and structures for loading and storing image data.
     * Tools/ – Base classes and manager for image processing tools.
 * UI/ – Contains all user interface components.
-    * Controls/ –  UI controls and panels.
+    * Panels/ –  UI panels (UserControl) the user interacts with.
 * Docs/ – Technical and project documentation.
 * Propeties/ – Project properties and metadata.
 * Vendor/ – Third-party or external code used in the project.

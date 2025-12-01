@@ -4,7 +4,7 @@ using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace LIMS.UI.Controls
+namespace LIMS.UI.Panels
 {
     /// <include file='../../Docs/LIMSClassesDocs.xml' path='ClassDocs/ClassMembers[@name="ToolsPanel"]/*'/>
     public partial class ToolsPanel : UserControl
