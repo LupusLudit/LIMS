@@ -21,6 +21,8 @@ Currently, the application supports applying watermarks to imported files, with 
 │   │   ├── ToolsManager.cs
 │   │   └── ...
 │   └── TabContext.cs
+├── Debug/
+│   └── Logger.cs
 ├── UI/
 │   ├── Panels/
 │   │   ├── ActionPanel.xaml
@@ -38,6 +40,7 @@ Currently, the application supports applying watermarks to imported files, with 
     * Core/ – Core classes for data storage and processing of tools.
     * ImageLoading/ – Classes and structures for loading and storing image data.
     * Tools/ – Base classes and manager for image processing tools.
+* Debug/ – Debugging utilities and logging functionality.
 * UI/ – Contains all user interface components.
     * Panels/ –  UI panels (UserControl) the user interacts with.
 * Docs/ – Technical and project documentation.

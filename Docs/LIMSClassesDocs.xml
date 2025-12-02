@@ -98,4 +98,11 @@
 		</summary>
 	</ClassMembers>
 
+	<ClassMembers name="Logger">
+		<summary>
+			Static class used for thread-safe logging.
+			Writes timestamped log entries into per-day log files under the application Log directory.
+		</summary>
+	</ClassMembers>
+
 </ClassDocs>
