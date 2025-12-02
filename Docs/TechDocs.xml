@@ -271,6 +271,27 @@
             HeaderPanel
             </summary>
         </member>
+        <member name="M:LIMS.UI.Panels.HeaderPanel.ZoomInClick(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Performs the zoom in action (making the font larger) on click.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Panels.HeaderPanel.ZoomOutClick(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Performs the zoom out action (making the font smaller) on click.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Panels.HeaderPanel.ZoomResetClick(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Resets the zoom value to default size on click.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Panels.HeaderPanel.GetAppFontSize">
+            <summary>
+            Retrieves the size of the font.
+            </summary>
+            <returns>The font size (double).</returns>
+        </member>
         <member name="M:LIMS.UI.Panels.HeaderPanel.InitializeComponent">
             <summary>
             InitializeComponent

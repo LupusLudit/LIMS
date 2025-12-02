@@ -16,7 +16,7 @@
 
                 <Image x:Name="PreviewImage" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0"/>
 
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Column="1">
                     <ListBox x:Name="ImageListBox"/>
                 </ScrollViewer>
 

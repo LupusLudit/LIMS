@@ -6,16 +6,17 @@
              xmlns:local="clr-namespace:LIMS.UI.Panels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
-    <UserControl.Resources>
-        <ContextMenu x:Key="PreferencesMenu">
-            <MenuItem Header="Zoom In" Click="ZoomInClick"/>
-            <MenuItem Header="Zoom Out" Click="ZoomOutClick"/>
-        </ContextMenu>
-    </UserControl.Resources>
 
-    <Grid>
-        <Button Content="Preferences" Padding="10,5" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="PreferencesClick" x:Name="PreferencesButton"/>
-        
-    </Grid>
+    <DockPanel >
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Preferences">
+                <MenuItem Header="Zoom" StaysOpenOnClick="True">
+                    <MenuItem Header="Zoom In" Click="ZoomInClick" StaysOpenOnClick="True"/>
+                    <MenuItem Header="Zoom Out" Click="ZoomOutClick" StaysOpenOnClick="True"/>
+                    <MenuItem Header="Reset" Click="ZoomResetClick" StaysOpenOnClick="False"/>
+                </MenuItem>
+                <Separator />
+            </MenuItem>
+        </Menu>
+    </DockPanel>
 </UserControl>

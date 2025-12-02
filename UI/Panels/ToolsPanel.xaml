@@ -7,10 +7,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Border BorderBrush="#444" BorderThickness="0,1,0,0">
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
 
-                <TextBlock Text="Tools" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                <TextBlock Text="Tools" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
 
                 <Expander Header="Watermark" IsExpanded="True">
                     <StackPanel Margin="10">

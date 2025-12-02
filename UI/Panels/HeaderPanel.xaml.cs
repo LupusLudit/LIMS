@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-
 namespace LIMS.UI.Panels
 {
 
@@ -13,21 +12,49 @@ namespace LIMS.UI.Panels
             InitializeComponent();
         }
 
-        private void PreferencesClick(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Performs the zoom in action (making the font larger) on click.
+        /// </summary>
+        private void ZoomInClick(object sender, RoutedEventArgs e)
         {
-            if (Resources["PreferencesMenu"] is ContextMenu menu)
+            double fontSize = GetAppFontSize();
+            if (fontSize < 22)
             {
-                menu.PlacementTarget = PreferencesButton;
-                menu.IsOpen = true;
+                Application.Current.Resources["GlobalFontSize"] = fontSize + 1;
             }
         }
 
-        private void ZoomInClick(object sender, RoutedEventArgs e)
-        {
-        }
-
+        /// <summary>
+        /// Performs the zoom out action (making the font smaller) on click.
+        /// </summary>
         private void ZoomOutClick(object sender, RoutedEventArgs e)
         {
+            double fontSize = GetAppFontSize();
+            if (fontSize > 10.0)
+            {
+                Application.Current.Resources["GlobalFontSize"] = fontSize - 1;
+            }
+        }
+
+        /// <summary>
+        /// Resets the zoom value to default size on click.
+        /// </summary>
+        private void ZoomResetClick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Resources["GlobalFontSize"] = 16.0;
+        }
+
+        /// <summary>
+        /// Retrieves the size of the font.
+        /// </summary>
+        /// <returns>The font size (double).</returns>
+        private double GetAppFontSize()
+        {
+            if (Application.Current.MainWindow != null)
+            {
+                return (double)Application.Current.Resources["GlobalFontSize"];
+            }
+            return 12.0;
         }
     }
 }
