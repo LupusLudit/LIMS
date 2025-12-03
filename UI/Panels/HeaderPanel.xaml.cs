@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using LIMS.Debugging;
+using System.Windows;
 using System.Windows.Controls;
 namespace LIMS.UI.Panels
 {
@@ -17,10 +18,18 @@ namespace LIMS.UI.Panels
         /// </summary>
         private void ZoomInClick(object sender, RoutedEventArgs e)
         {
-            double fontSize = GetAppFontSize();
-            if (fontSize < 22)
+            try
             {
-                Application.Current.Resources["GlobalFontSize"] = fontSize + 1;
+                double fontSize = GetAppFontSize();
+                if (fontSize < 22)
+                {
+                    Application.Current.Resources["GlobalFontSize"] = fontSize + 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while zooming in.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
             }
         }
 
@@ -29,10 +38,18 @@ namespace LIMS.UI.Panels
         /// </summary>
         private void ZoomOutClick(object sender, RoutedEventArgs e)
         {
-            double fontSize = GetAppFontSize();
-            if (fontSize > 10.0)
+            try
             {
-                Application.Current.Resources["GlobalFontSize"] = fontSize - 1;
+                double fontSize = GetAppFontSize();
+                if (fontSize > 10.0)
+                {
+                    Application.Current.Resources["GlobalFontSize"] = fontSize - 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while zooming out.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
             }
         }
 
@@ -41,7 +58,15 @@ namespace LIMS.UI.Panels
         /// </summary>
         private void ZoomResetClick(object sender, RoutedEventArgs e)
         {
-            Application.Current.Resources["GlobalFontSize"] = 16.0;
+            try
+            {
+                Application.Current.Resources["GlobalFontSize"] = 16.0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while resetting the zoom value.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
+            }
         }
 
         /// <summary>

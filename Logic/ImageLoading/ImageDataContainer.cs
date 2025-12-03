@@ -5,11 +5,12 @@
     {
         public string FilePath { get; }
 
-        public byte[]? RawBytes { get; set; }
+        public byte[] RawBytes { get; set; }
 
-        public ImageDataContainer(string filePath)
+        public ImageDataContainer(string filePath, byte[] rawBytes)
         {
             FilePath = filePath;
+            RawBytes = rawBytes;
         }
     }
 }

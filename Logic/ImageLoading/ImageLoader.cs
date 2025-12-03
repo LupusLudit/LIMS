@@ -19,8 +19,8 @@ namespace LIMS.Logic.ImageLoading
         {
             IEnumerable<Task> tasks = filePaths.Select(path => Task.Run(async () =>
                 {
-                    ImageDataContainer image = new ImageDataContainer(path);
-                    image.RawBytes = await File.ReadAllBytesAsync(path);
+                    byte[] bytes = await File.ReadAllBytesAsync(path);
+                    ImageDataContainer image = new ImageDataContainer(path, bytes);
 
                     storage.AddImage(image);
                 }

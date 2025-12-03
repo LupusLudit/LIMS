@@ -3,6 +3,8 @@ using LIMS.Logic;
 using LIMS.Logic.ImageLoading;
 using System.IO;
 using LIMS.Vendor;
+using System.Windows;
+using LIMS.Debugging;
 
 
 namespace LIMS.UI.Panels
@@ -78,33 +80,42 @@ namespace LIMS.UI.Panels
         /// <param name="e">The selection changed event arguments.</param>
         private void ImageSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ImageListBox.SelectedIndex >= 0 && tabContext != null)
+            try
             {
-                string fileName = ImageListBox.SelectedItem.ToString()!;
-                string fullPath = filePaths.FirstOrDefault(file => Path.GetFileName(file) == fileName)!;
-
-                if (tabContext != null)
+                if (ImageListBox.SelectedIndex >= 0 && tabContext != null)
                 {
-                    tabContext.Storage.TryGetImage(fullPath, out ImageDataContainer? image);
+                    string fileName = ImageListBox.SelectedItem.ToString()!;
+                    string fullPath = filePaths.FirstOrDefault(file => Path.GetFileName(file) == fileName)!;
 
-                    if (image != null && image.RawBytes != null)
+                    if (tabContext != null)
                     {
-                        byte[] previewBytes = (byte[])image.RawBytes.Clone();
+                        tabContext.Storage.TryGetImage(fullPath, out ImageDataContainer? image);
 
-                        foreach (var tool in tabContext.ToolsManager.Tools)
+                        if (image != null && image.RawBytes != null)
                         {
-                            if (tool.Enabled)
+                            byte[] previewBytes = (byte[])image.RawBytes.Clone();
+
+                            foreach (var tool in tabContext.ToolsManager.Tools)
                             {
-                                var temp = new ImageDataContainer(fullPath) { RawBytes = previewBytes };
-                                tool.Apply(temp);
-                                previewBytes = temp.RawBytes!;
+                                if (tool.Enabled)
+                                {
+                                    ImageDataContainer tempContainer = new ImageDataContainer(fullPath, previewBytes);
+
+                                    tool.Apply(tempContainer);
+                                    previewBytes = tempContainer.RawBytes!;
+                                }
                             }
+
+                            PreviewImage.Source = BitmapLoader.LoadBitmapImage(previewBytes);
                         }
 
-                        PreviewImage.Source = BitmapLoader.LoadBitmapImage(previewBytes);
                     }
-
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while loading the preview image.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
             }
         }
     }

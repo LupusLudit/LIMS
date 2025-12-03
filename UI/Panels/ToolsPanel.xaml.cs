@@ -1,4 +1,5 @@
-﻿using LIMS.Logic;
+﻿using LIMS.Debugging;
+using LIMS.Logic;
 using LIMS.Logic.Tools;
 using Microsoft.Win32;
 using System.Windows;
@@ -31,24 +32,32 @@ namespace LIMS.UI.Panels
         /// <summary>
         /// Enables the watermark tool and refreshes the preview.
         /// </summary>
-        private void EnableWatermark(object sender, RoutedEventArgs e)
-        {
-            if (watermarkTool != null)
-            {
-                watermarkTool.Enabled = true;
-                PreviewPanelReference?.RefreshPreview();
-            }
-        }
+        private void EnableWatermark(object sender, RoutedEventArgs e) => ToggleWatermark(true);
 
         /// <summary>
         /// Disables the watermark tool and refreshes the preview.
         /// </summary>
-        private void DisableWatermark(object sender, RoutedEventArgs e)
+        private void DisableWatermark(object sender, RoutedEventArgs e) => ToggleWatermark(false);
+
+        /// <summary>
+        /// Toggles the watermark tool on or off.
+        /// </summary>
+        /// <param name="active">if set to <c>true</c> [active].</param>
+       
+        private void ToggleWatermark(bool active)
         {
-            if (watermarkTool != null)
+            try
             {
-                watermarkTool.Enabled = false;
-                PreviewPanelReference?.RefreshPreview();
+                if (watermarkTool != null)
+                {
+                    watermarkTool.Enabled = active;
+                    PreviewPanelReference?.RefreshPreview();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while toggling the watermark tool.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
             }
         }
 
@@ -59,15 +68,23 @@ namespace LIMS.UI.Panels
         /// </summary>
         public void OnBrowseButtonClicked(object sender, RoutedEventArgs e)
         {
-            var dialog = new OpenFileDialog
+            try
             {
-                Filter = $"Image Files|*{string.Join(";*", TabContext.AllowedExtensions)}",
-                Multiselect = false
-            };
+                var dialog = new OpenFileDialog
+                {
+                    Filter = $"Image Files|*{string.Join(";*", TabContext.AllowedExtensions)}",
+                    Multiselect = false
+                };
 
-            if (dialog.ShowDialog() == true && watermarkTool != null)
+                if (dialog.ShowDialog() == true && watermarkTool != null)
+                {
+                    watermarkTool.WatermarkPath = dialog.FileName;
+                }
+            }
+            catch (Exception ex) 
             {
-                watermarkTool.WatermarkPath = dialog.FileName;
+                MessageBox.Show("An error occurred while selecting the watermark image.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
             }
         }
 
@@ -77,19 +94,27 @@ namespace LIMS.UI.Panels
         /// </summary>
         private void WatermarkPositionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (watermarkTool != null && WatermarkPositionComboBox.SelectedItem is ComboBoxItem item)
+            try
             {
-                watermarkTool.Position = item.Content.ToString() switch
+                if (watermarkTool != null && WatermarkPositionComboBox.SelectedItem is ComboBoxItem item)
                 {
-                    "Top-left" => WatermarkPosition.TopLeft,
-                    "Top-right" => WatermarkPosition.TopRight,
-                    "Bottom-left" => WatermarkPosition.BottomLeft,
-                    "Bottom-right" => WatermarkPosition.BottomRight,
-                    "Center" => WatermarkPosition.Center,
-                    _ => WatermarkPosition.Center,
-                };
+                    watermarkTool.Position = item.Content.ToString() switch
+                    {
+                        "Top-left" => WatermarkPosition.TopLeft,
+                        "Top-right" => WatermarkPosition.TopRight,
+                        "Bottom-left" => WatermarkPosition.BottomLeft,
+                        "Bottom-right" => WatermarkPosition.BottomRight,
+                        "Center" => WatermarkPosition.Center,
+                        _ => WatermarkPosition.Center,
+                    };
 
-                PreviewPanelReference?.RefreshPreview();
+                    PreviewPanelReference?.RefreshPreview();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while positioning the watermark image.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
             }
         }
 
@@ -99,10 +124,18 @@ namespace LIMS.UI.Panels
         /// </summary>
         private void OpacitySliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (watermarkTool != null)
+            try
             {
-                watermarkTool.Opacity = (float)e.NewValue;
-                PreviewPanelReference?.RefreshPreview();
+                if (watermarkTool != null)
+                {
+                    watermarkTool.Opacity = (float)e.NewValue;
+                    PreviewPanelReference?.RefreshPreview();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while changing the watermark opacity.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
             }
         }
 

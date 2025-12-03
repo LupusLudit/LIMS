@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 
 namespace LIMS.Debugging
 {
@@ -15,6 +16,14 @@ namespace LIMS.Debugging
 
         private static readonly object lockObject = new object();
         private static string logDirectoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+
+        static Logger()
+        {
+            if (!Directory.Exists(logDirectoryPath))
+            {
+                Directory.CreateDirectory(logDirectoryPath);
+            }
+        }
 
         private static string GetTodaysFilePath()
         {

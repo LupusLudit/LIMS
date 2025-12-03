@@ -1,4 +1,5 @@
-﻿using LIMS.Logic;
+﻿using LIMS.Debugging;
+using LIMS.Logic;
 using LIMS.Logic.ImageLoading;
 using Microsoft.Win32;
 using System.IO;
@@ -34,17 +35,25 @@ namespace LIMS.UI.Panels
         /// </summary>
         public async void OnImportFilesClick(object sender, RoutedEventArgs e)
         {
-            var dialog = new OpenFileDialog
+            try
             {
-                Filter = $"Image Files|*{string.Join(";*", tabContext!.AllowedExtensions)}",
-                Multiselect = true
-            };
+                var dialog = new OpenFileDialog
+                {
+                    Filter = $"Image Files|*{string.Join(";*", tabContext!.AllowedExtensions)}",
+                    Multiselect = true
+                };
 
-            if (dialog.ShowDialog() == true)
+                if (dialog.ShowDialog() == true)
+                {
+                    await ImageLoader.LoadImagesAsync(dialog.FileNames, tabContext.Storage);
+
+                    SendPathsToPreviewPanel(dialog.FileNames);
+                }
+            }
+            catch (Exception ex)
             {
-                await ImageLoader.LoadImagesAsync(dialog.FileNames, tabContext.Storage);
-
-                SendPathsToPreviewPanel(dialog.FileNames);
+                MessageBox.Show("An error occurred while importing images.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
             }
         }
 
@@ -55,20 +64,28 @@ namespace LIMS.UI.Panels
         /// </summary>
         public async void OnImportFromFolderClick(object sender, RoutedEventArgs e)
         {
-            OpenFolderDialog dialog = new OpenFolderDialog();
-
-            if (dialog.ShowDialog() == true)
+            try
             {
-                string? selectedFolder = dialog.FolderName;
-                if (selectedFolder != null)
-                {
-                    List<string> loadedPaths = Directory.EnumerateFiles(selectedFolder)
-                        .Where(file => tabContext!.AllowedExtensions.Contains(Path.GetExtension(file).ToLower())).ToList();
+                OpenFolderDialog dialog = new OpenFolderDialog();
 
-                    await ImageLoader.LoadImagesAsync(loadedPaths, tabContext!.Storage);
-                    
-                    SendPathsToPreviewPanel(loadedPaths);
+                if (dialog.ShowDialog() == true)
+                {
+                    string? selectedFolder = dialog.FolderName;
+                    if (selectedFolder != null)
+                    {
+                        List<string> loadedPaths = Directory.EnumerateFiles(selectedFolder)
+                            .Where(file => tabContext!.AllowedExtensions.Contains(Path.GetExtension(file).ToLower())).ToList();
+
+                        await ImageLoader.LoadImagesAsync(loadedPaths, tabContext!.Storage);
+
+                        SendPathsToPreviewPanel(loadedPaths);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while importing images from this folder.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
             }
         }
 
@@ -83,23 +100,33 @@ namespace LIMS.UI.Panels
             if (!tabContext.ToolsInValidStates(out errorMessage))
             {
                 MessageBox.Show(errorMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Logger.Warning(errorMessage!);
                 return;
             }
 
-            OpenFolderDialog dialog = new OpenFolderDialog();
-            if (dialog.ShowDialog() == true)
+            try
             {
-                string destinationFolder = dialog.FolderName;
-                if (!string.IsNullOrEmpty(destinationFolder))
+                OpenFolderDialog dialog = new OpenFolderDialog();
+                if (dialog.ShowDialog() == true)
                 {
-                    tabContext.ProcessAllTools();
-                    SaveAllImages(destinationFolder);
-                    tabContext.Storage.Clear();
-                    PreviewPanelReference.ClearImages();
+                    string destinationFolder = dialog.FolderName;
+                    if (!string.IsNullOrEmpty(destinationFolder))
+                    {
+                        tabContext.ProcessAllTools();
+                        SaveAllImages(destinationFolder);
+                        tabContext.Storage.Clear();
+                        PreviewPanelReference.ClearImages();
 
-                    MessageBox.Show("Images exported successfully!", "Export Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Images exported successfully!", "Export Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
                 }
             }
+            catch(Exception ex)
+            {
+                MessageBox.Show("An error occurred during image processing.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
+            }
+
         }
 
         /// <summary>
@@ -108,8 +135,16 @@ namespace LIMS.UI.Panels
         /// </summary>
         public void OnClearButtonClick(object sender, RoutedEventArgs e)
         {
-            tabContext!.Storage.Clear();
-            PreviewPanelReference.ClearImages();
+            try
+            {
+                tabContext!.Storage.Clear();
+                PreviewPanelReference.ClearImages();
+            }
+            catch (Exception ex) 
+            {
+                MessageBox.Show("An error occurred while clearing the images.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
+            }
         }
 
         /// <summary>
