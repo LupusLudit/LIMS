@@ -28,6 +28,19 @@
 			Writes timestamped log entries into per-day log files under the application Log directory.
 		</summary>
         </member>
+        <member name="M:LIMS.Debugging.Logger.GetTodaysFilePath">
+            <summary>
+            Gets the todays log file path.
+            </summary>
+            <returns>Path to the log file (string).</returns>
+        </member>
+        <member name="M:LIMS.Debugging.Logger.Write(LIMS.Debugging.LogType,System.String)">
+            <summary>
+            Writes the a passed message (with a specific type) into todays log file.
+            </summary>
+            <param name="type">The type of the message (LogType enum).</param>
+            <param name="message">The specific message to be written into the log file (string).</param>
+        </member>
         <member name="T:LIMS.Logic.Core.DataStorage">
             <summary>
 			Class responsible for storing and managing loaded image data in a thread-safe manner.
@@ -410,36 +423,6 @@
             <returns>
             The bitmap image.
             </returns>
-        </member>
-        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
-            <summary>
-            GeneratedInternalTypeHelper
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
-            <summary>
-            CreateInstance
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            GetPropertyValue
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            SetPropertyValue
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
-            <summary>
-            CreateDelegate
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
-            <summary>
-            AddEventHandler
-            </summary>
         </member>
     </members>
 </doc>

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 
 namespace LIMS.Debugging
 {
@@ -25,12 +24,21 @@ namespace LIMS.Debugging
             }
         }
 
+        /// <summary>
+        /// Gets the todays log file path.
+        /// </summary>
+        /// <returns>Path to the log file (string).</returns>
         private static string GetTodaysFilePath()
         {
             string path = Path.Combine(logDirectoryPath, $"{DateTime.Now.ToString("yyyy-MM-dd")}.log");
             return path;
         }
 
+        /// <summary>
+        /// Writes the a passed message (with a specific type) into todays log file.
+        /// </summary>
+        /// <param name="type">The type of the message (LogType enum).</param>
+        /// <param name="message">The specific message to be written into the log file (string).</param>
         private static void Write(LogType type, string message)
         {
             string line = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] <{type}>: {message}";
