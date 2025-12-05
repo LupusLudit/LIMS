@@ -23,11 +23,6 @@ Currently, the application supports applying watermarks to imported files, with 
 │   └── TabContext.cs
 ├── Debugging/
 │   └── Logger.cs
-├── Tests/
-│   └── /CoreTests
-│       └── ...
-│   └── /ToolsTests
-│       └── ...
 ├── UI/
 │   ├── Panels/
 │   │   ├── ActionPanel.xaml
@@ -46,9 +41,6 @@ Currently, the application supports applying watermarks to imported files, with 
     * ImageLoading/ – Classes and structures for loading and storing image data.
     * Tools/ – Base classes and manager for image processing tools.
 * Debugging/ – Debugging utilities and logging functionality.
-* Tests/ – Unit tests for various components of the application. Note: The repository does not include test runners or frameworks. But the test files can be used to generate runnable tests in local environments.
-	* CoreTests/ – Tests for core logic and data handling.
-	* ToolsTests/ – Tests for image processing tools.
 * UI/ – Contains all user interface components.
     * Panels/ –  UI panels (UserControl) the user interacts with.
 * Docs/ – Technical and project documentation.
@@ -63,7 +55,7 @@ Currently, the application supports applying watermarks to imported files, with 
 
 ## Running the program
 
-You can download the latest release of LIMS here: [v1.0.0](https://github.com/LupusLudit/LIMS/releases/tag/v1.0.1)
+You can download the latest release of LIMS here: [v1.0.0](https://github.com/LupusLudit/LIMS/releases/tag/v.1.0.0)
 
 **To run the program:**  
 1. Download the compressed release files.  
