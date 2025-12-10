@@ -380,12 +380,6 @@
             Disables the watermark tool and refreshes the preview.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Panels.ToolsPanel.ToggleWatermark(System.Boolean)">
-            <summary>
-            Toggles the watermark tool on or off.
-            </summary>
-            <param name="active">if set to <c>true</c> [active].</param>
-        </member>
         <member name="M:LIMS.UI.Panels.ToolsPanel.OnBrowseButtonClicked(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Handles the Browse button click to select a watermark image file.
@@ -403,6 +397,13 @@
             Handles changes in the opacity slider.
             Updates <see cref="P:LIMS.Logic.Tools.WatermarkTool.Opacity"/> and refreshes the preview.
             </summary>
+        </member>
+        <member name="M:LIMS.UI.Panels.ToolsPanel.ToggleTool(LIMS.Logic.Tools.ToolBase,System.Boolean)">
+            <summary>
+            Toggles the selected tool on or off.
+            </summary>
+            <param name="tool">tool to be toggled.</param>
+            <param name="active">if set to <c>true</c> [active].</param>
         </member>
         <member name="M:LIMS.UI.Panels.ToolsPanel.InitializeComponent">
             <summary>
@@ -423,6 +424,36 @@
             <returns>
             The bitmap image.
             </returns>
+        </member>
+        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+            <summary>
+            GeneratedInternalTypeHelper
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            CreateInstance
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            GetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            SetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+            <summary>
+            CreateDelegate
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+            <summary>
+            AddEventHandler
+            </summary>
         </member>
     </members>
 </doc>

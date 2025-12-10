@@ -18,12 +18,14 @@ namespace LIMS.UI.Panels
             {
                 tabContext = value;
                 watermarkTool = tabContext.ToolsManager.RegisterTool(new WatermarkTool());
+                resizeTool = tabContext.ToolsManager.RegisterTool(new ResizeTool());
             }
         }
 
         public required PreviewPanel PreviewPanelReference { get; set; }
 
         private WatermarkTool? watermarkTool;
+        private ResizeTool? resizeTool;
         public ToolsPanel()
         {
             InitializeComponent();
@@ -32,34 +34,12 @@ namespace LIMS.UI.Panels
         /// <summary>
         /// Enables the watermark tool and refreshes the preview.
         /// </summary>
-        private void EnableWatermark(object sender, RoutedEventArgs e) => ToggleWatermark(true);
+        private void EnableWatermark(object sender, RoutedEventArgs e) => ToggleTool(watermarkTool, true);
 
         /// <summary>
         /// Disables the watermark tool and refreshes the preview.
         /// </summary>
-        private void DisableWatermark(object sender, RoutedEventArgs e) => ToggleWatermark(false);
-
-        /// <summary>
-        /// Toggles the watermark tool on or off.
-        /// </summary>
-        /// <param name="active">if set to <c>true</c> [active].</param>
-       
-        private void ToggleWatermark(bool active)
-        {
-            try
-            {
-                if (watermarkTool != null)
-                {
-                    watermarkTool.Enabled = active;
-                    PreviewPanelReference?.RefreshPreview();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while toggling the watermark tool.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
-            }
-        }
+        private void DisableWatermark(object sender, RoutedEventArgs e) => ToggleTool(watermarkTool, false);
 
 
         /// <summary>
@@ -139,6 +119,52 @@ namespace LIMS.UI.Panels
             }
         }
 
+        private void ResizeValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            try
+            {
+                if (resizeTool != null && e.NewValue is decimal dec)
+                {
+                    resizeTool.ResizeValue = (float)dec;
+                    PreviewPanelReference?.RefreshPreview();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while changing the resize value.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
+            }
+        }
+
+
+        private void EnableResizing(object sender, RoutedEventArgs e) => ToggleTool(resizeTool, true);
+
+        private void DisableResizing(object sender, RoutedEventArgs e) => ToggleTool(resizeTool, false);
+
+
+
+        /// <summary>
+        /// Toggles the selected tool on or off.
+        /// </summary>
+        /// <param name="tool">tool to be toggled.</param>
+        /// <param name="active">if set to <c>true</c> [active].</param>
+
+        private void ToggleTool(ToolBase? tool, bool active)
+        {
+            try
+            {
+                if (tool != null)
+                {
+                    tool.Enabled = active;
+                    PreviewPanelReference?.RefreshPreview();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while toggling the watermark tool.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
+            }
+        }
 
     }
 }
