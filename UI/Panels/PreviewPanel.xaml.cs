@@ -3,9 +3,8 @@ using LIMS.Logic;
 using LIMS.Logic.ImageLoading;
 using System.IO;
 using LIMS.Vendor;
-using System.Windows;
 using LIMS.Debugging;
-
+using System.Windows.Media.Imaging;
 
 namespace LIMS.UI.Panels
 {
@@ -14,6 +13,9 @@ namespace LIMS.UI.Panels
     {
         private HashSet<string> filePaths = new HashSet<string>();
         private TabContext? tabContext;
+
+        private CancellationTokenSource? cancellationTokenSource;
+
         public required TabContext TabContext
         {
             get { return tabContext!; }
@@ -29,7 +31,6 @@ namespace LIMS.UI.Panels
             ImageListBox.SelectionChanged += ImageSelectionChanged;
         }
 
-
         /// <summary>
         /// Updates the UI list with the names of the currently loaded images.
         /// Automatically selects the first image if any exist.
@@ -39,7 +40,6 @@ namespace LIMS.UI.Panels
             ImageListBox.ItemsSource = filePaths.Select(Path.GetFileName).ToList();
             if (ImageListBox.Items.Count > 0) ImageListBox.SelectedIndex = 0;
         }
-
 
         /// <summary>
         /// Adds an image to the preview panel and updates the UI list.
@@ -69,53 +69,79 @@ namespace LIMS.UI.Panels
         /// </summary>
         public void RefreshPreview()
         {
-            ImageSelectionChanged(this, null);
+            UpdatePreviewAsync();
         }
 
         /// <summary>
-        /// Handles the selection change in the image list and updates the preview image.
-        /// Applies all enabled tools from <see cref="TabContext.ToolsManager"/> to the selected image.
+        /// Handles the selection change in the image list.
         /// </summary>
-        /// <param name="sender">The source of the selection change event.</param>
-        /// <param name="e">The selection changed event arguments.</param>
         private void ImageSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            UpdatePreviewAsync();
+        }
+
+        /// <summary>
+        /// Asynchronously updates the preview image.
+        /// Cancels any previous ongoing updates to ensure UI responsiveness.
+        /// </summary>
+        private async void UpdatePreviewAsync()
+        {
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource = new CancellationTokenSource();
+            var token = cancellationTokenSource.Token;
+
             try
             {
-                if (ImageListBox.SelectedIndex >= 0 && tabContext != null)
+                if (ImageListBox.SelectedIndex < 0 || tabContext == null) return;
+
+                string? fileName = ImageListBox.SelectedItem?.ToString();
+                string fullPath = filePaths.FirstOrDefault(file => Path.GetFileName(file) == fileName)!;
+                if (fileName == null || fullPath == null) return;
+
+                tabContext.Storage.TryGetImage(fullPath, out ImageDataContainer? sourceImage);
+
+                if (sourceImage != null && sourceImage.RawBytes != null)
                 {
-                    string fileName = ImageListBox.SelectedItem.ToString()!;
-                    string fullPath = filePaths.FirstOrDefault(file => Path.GetFileName(file) == fileName)!;
-
-                    if (tabContext != null)
+                    byte[] originalBytes = (byte[])sourceImage.RawBytes.Clone();
+                    var toolsToApply = tabContext.ToolsManager.Tools.Where(t => t.Enabled).ToList();
+                    BitmapImage? resultImage = await Task.Run(() =>
                     {
-                        tabContext.Storage.TryGetImage(fullPath, out ImageDataContainer? image);
-
-                        if (image != null && image.RawBytes != null)
+                        if (token.IsCancellationRequested)
                         {
-                            byte[] previewBytes = (byte[])image.RawBytes.Clone();
-
-                            foreach (var tool in tabContext.ToolsManager.Tools)
-                            {
-                                if (tool.Enabled)
-                                {
-                                    ImageDataContainer tempContainer = new ImageDataContainer(fullPath, previewBytes);
-
-                                    tool.Apply(tempContainer);
-                                    previewBytes = tempContainer.RawBytes!;
-                                }
-                            }
-
-                            PreviewImage.Source = BitmapLoader.LoadBitmapImage(previewBytes);
+                            return null;
                         }
 
+                        ImageDataContainer tempContainer = new ImageDataContainer(fullPath, originalBytes);
+
+                        foreach (var tool in toolsToApply)
+                        {
+                            if (token.IsCancellationRequested)
+                            {
+                                return null;
+                            }
+
+                            tool.Apply(tempContainer);
+                        }
+
+                        if (tempContainer.RawBytes == null || token.IsCancellationRequested)
+                        {
+                            return null;
+                        }
+
+                        return BitmapLoader.LoadBitmapImage(tempContainer.RawBytes);
+
+                    }, CancellationToken.None);
+
+                    if (resultImage != null && !token.IsCancellationRequested)
+                    {
+                        PreviewImage.Source = resultImage;
                     }
                 }
             }
+            catch (OperationCanceledException) { }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occurred while loading the preview image.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
+                Logger.Error($"Error updating preview: {ex.Message}");
             }
         }
     }

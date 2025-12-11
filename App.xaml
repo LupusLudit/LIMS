@@ -6,9 +6,11 @@
              StartupUri="UI/MainWindow.xaml">
     <Application.Resources>
         <System:Double x:Key="GlobalFontSize">16</System:Double>
+
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="{DynamicResource GlobalFontSize}"/>
         </Style>
-
     </Application.Resources>
+    
+
 </Application>

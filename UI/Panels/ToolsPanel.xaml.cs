@@ -11,44 +11,80 @@ namespace LIMS.UI.Panels
     public partial class ToolsPanel : UserControl
     {
         private TabContext? tabContext;
+        private WatermarkTool? watermarkTool;
+        private ScaleTool? scaleTool;
+        private ResizeTool? resizeTool;
+        private FlipTool? flipTool;
+        private BrightnessTool? brightnessTool;
+
         public required TabContext TabContext
         {
-            get { return tabContext!; }
+            get => tabContext!;
             set
             {
                 tabContext = value;
-                watermarkTool = tabContext.ToolsManager.RegisterTool(new WatermarkTool());
-                resizeTool = tabContext.ToolsManager.RegisterTool(new ResizeTool());
+                RegisterTools();
             }
         }
 
         public required PreviewPanel PreviewPanelReference { get; set; }
 
-        private WatermarkTool? watermarkTool;
-        private ResizeTool? resizeTool;
-        public ToolsPanel()
+        public ToolsPanel() => InitializeComponent();
+
+        /// <summary>
+        /// Registers all tools with the TabContext ToolsManager.
+        /// </summary>
+        private void RegisterTools()
         {
-            InitializeComponent();
+            watermarkTool = tabContext!.ToolsManager.RegisterTool(new WatermarkTool());
+            scaleTool = tabContext.ToolsManager.RegisterTool(new ScaleTool());
+            resizeTool = tabContext.ToolsManager.RegisterTool(new ResizeTool());
+            flipTool = tabContext.ToolsManager.RegisterTool(new FlipTool());
+            brightnessTool = tabContext.ToolsManager.RegisterTool(new BrightnessTool());
         }
 
         /// <summary>
-        /// Enables the watermark tool and refreshes the preview.
+        /// Toggles a tool and refreshes the preview.
         /// </summary>
-        private void EnableWatermark(object sender, RoutedEventArgs e) => ToggleTool(watermarkTool, true);
+        private void ToggleTool(ToolBase? tool, bool active)
+        {
+            if (tool == null) return;
+
+            try
+            {
+                tool.Enabled = active;
+                PreviewPanelReference?.RefreshPreview();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while toggling {tool.GetType().Name}.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
+            }
+        }
 
         /// <summary>
-        /// Disables the watermark tool and refreshes the preview.
+        /// Safely applies a property change to a tool and refreshes the preview.
         /// </summary>
-        private void DisableWatermark(object sender, RoutedEventArgs e) => ToggleTool(watermarkTool, false);
-
-
-        /// <summary>
-        /// Handles the Browse button click to select a watermark image file.
-        /// Sets the selected file as the watermark path for <see cref="WatermarkTool"/>.
-        /// </summary>
-        public void OnBrowseButtonClicked(object sender, RoutedEventArgs e)
+        private void ApplyToolValue(Action applyAction, string errorMessage)
         {
             try
+            {
+                applyAction();
+                PreviewPanelReference?.RefreshPreview();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex.Message);
+            }
+        }
+
+        private void EnableWatermark(object sender, RoutedEventArgs e) => ToggleTool(watermarkTool, true);
+        private void DisableWatermark(object sender, RoutedEventArgs e) => ToggleTool(watermarkTool, false);
+
+        private void OnBrowseButtonClicked(object sender, RoutedEventArgs e)
+        {
+            ApplyToolValue(() =>
             {
                 var dialog = new OpenFileDialog
                 {
@@ -60,21 +96,12 @@ namespace LIMS.UI.Panels
                 {
                     watermarkTool.WatermarkPath = dialog.FileName;
                 }
-            }
-            catch (Exception ex) 
-            {
-                MessageBox.Show("An error occurred while selecting the watermark image.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
-            }
+            }, "An error occurred while selecting the watermark image.");
         }
 
-        /// <summary>
-        /// Handles changes in the watermark position ComboBox.
-        /// Updates <see cref="WatermarkTool.Position"/> and refreshes the preview.
-        /// </summary>
         private void WatermarkPositionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
+            ApplyToolValue(() =>
             {
                 if (watermarkTool != null && WatermarkPositionComboBox.SelectedItem is ComboBoxItem item)
                 {
@@ -87,83 +114,99 @@ namespace LIMS.UI.Panels
                         "Center" => WatermarkPosition.Center,
                         _ => WatermarkPosition.Center,
                     };
-
-                    PreviewPanelReference?.RefreshPreview();
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while positioning the watermark image.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
-            }
+            }, "An error occurred while positioning the watermark.");
         }
 
-        /// <summary>
-        /// Handles changes in the opacity slider.
-        /// Updates <see cref="WatermarkTool.Opacity"/> and refreshes the preview.
-        /// </summary>
-        private void OpacitySliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void OpacitySliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) 
         {
-            try
+            ApplyToolValue(() => 
             {
                 if (watermarkTool != null)
                 {
-                    watermarkTool.Opacity = (float)e.NewValue;
-                    PreviewPanelReference?.RefreshPreview();
+                    watermarkTool.Opacity = Convert.ToSingle(e.NewValue);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while changing the watermark opacity.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
-            }
+            }, "An error occurred while changing the watermark opacity.");
         }
 
-        private void ResizeValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void EnableScaling(object sender, RoutedEventArgs e) => ToggleTool(scaleTool, true);
+        private void DisableScaling(object sender, RoutedEventArgs e) => ToggleTool(scaleTool, false);
+
+        private void ScaleValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            try
+            ApplyToolValue(() =>
             {
-                if (resizeTool != null && e.NewValue is decimal dec)
+                if (scaleTool != null && e.NewValue != null)
                 {
-                    resizeTool.ResizeValue = (float)dec;
-                    PreviewPanelReference?.RefreshPreview();
+                    scaleTool.ScaleValue = Convert.ToSingle(e.NewValue);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while changing the resize value.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
-            }
+            }, "An error occurred while changing the scale value.");
         }
 
+        private void EnableResize(object sender, RoutedEventArgs e) => ToggleTool(resizeTool, true);
+        private void DisableResize(object sender, RoutedEventArgs e) => ToggleTool(resizeTool, false);
 
-        private void EnableResizing(object sender, RoutedEventArgs e) => ToggleTool(resizeTool, true);
-
-        private void DisableResizing(object sender, RoutedEventArgs e) => ToggleTool(resizeTool, false);
-
-
-
-        /// <summary>
-        /// Toggles the selected tool on or off.
-        /// </summary>
-        /// <param name="tool">tool to be toggled.</param>
-        /// <param name="active">if set to <c>true</c> [active].</param>
-
-        private void ToggleTool(ToolBase? tool, bool active)
+        private void ResizeWidthChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            try
+            ApplyToolValue(() =>
             {
-                if (tool != null)
+                if (resizeTool != null && e.NewValue != null)
                 {
-                    tool.Enabled = active;
-                    PreviewPanelReference?.RefreshPreview();
+                    resizeTool.Width = Convert.ToInt32(e.NewValue);
                 }
-            }
-            catch (Exception ex)
+            }, "An error occurred while changing the width.");
+        }
+
+        private void ResizeHeightChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            ApplyToolValue(() =>
             {
-                MessageBox.Show("An error occurred while toggling the watermark tool.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
-            }
+                if (resizeTool != null && e.NewValue != null)
+                {
+                    resizeTool.Height = Convert.ToInt32(e.NewValue);
+                }
+            }, "An error occurred while changing the height.");
+        }
+
+        private void EnableFlip(object sender, RoutedEventArgs e) => ToggleTool(flipTool, true);
+        private void DisableFlip(object sender, RoutedEventArgs e) => ToggleTool(flipTool, false);
+
+        private void FlipHorizontalChanged(object sender, RoutedEventArgs e)
+        {
+            ApplyToolValue(() =>
+            {
+                if (flipTool != null && sender is CheckBox comboBox)
+                {
+                    flipTool.FlipHorizontal = comboBox.IsChecked == true;
+                }
+            }, "An error occurred while flipping horizontally.");
+        }
+
+        private void FlipVerticalChanged(object sender, RoutedEventArgs e)
+        {
+            ApplyToolValue(() =>
+            {
+                if (flipTool != null && sender is CheckBox comboBox)
+                {
+                    flipTool.FlipVertical = comboBox.IsChecked == true;
+
+                }
+            }, "An error occurred while flipping vertically.");
+        }
+
+        private void EnableBrightness(object sender, RoutedEventArgs e) => ToggleTool(brightnessTool, true);
+        private void DisableBrightness(object sender, RoutedEventArgs e) => ToggleTool(brightnessTool, false);
+
+        private void BrightnessChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            ApplyToolValue(() =>
+            {
+                if (brightnessTool != null && e.NewValue != null)
+                {
+                    brightnessTool.Brightness = Convert.ToSingle(e.NewValue);
+
+                }
+            }, "An error occurred while changing the brightness.");
         }
 
     }

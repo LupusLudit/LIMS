@@ -26,7 +26,7 @@
                             <ComboBoxItem Content="Top-right"/>
                             <ComboBoxItem Content="Bottom-left"/>
                             <ComboBoxItem Content="Bottom-right"/>
-                            <ComboBoxItem Content="Center"/>
+                            <ComboBoxItem Content="Center" IsSelected="True"/>
                         </ComboBox>
 
                         <Label Content="Opacity:" Margin="0,10,0,0"/>
@@ -34,12 +34,41 @@
                     </StackPanel>
                 </Expander>
 
+                <Expander Header="Scale" IsExpanded="False">
+                    <StackPanel Margin="10">
+                        <CheckBox Content="Enable Scaling" Checked="EnableScaling" Unchecked="DisableScaling"/>
+
+                        <Label Content="Scale value (0.1-2.0):" Margin="0,10,0,0"/>
+                        <xctk:DecimalUpDown Minimum="0.1" Maximum="2" Increment="0.1" FormatString="F1" DefaultValue="1" ValueChanged="ScaleValueChanged"/>
+                    </StackPanel>
+                </Expander>
+
                 <Expander Header="Resize" IsExpanded="False">
                     <StackPanel Margin="10">
-                        <CheckBox Content="Enable Resizing" Checked="EnableResizing" Unchecked="DisableResizing"/>
+                        <CheckBox Content="Enable Resize" Checked="EnableResize" Unchecked="DisableResize"/>
+                        <Label Content="Width:" Margin="0,10,0,0"/>
+                        <xctk:IntegerUpDown Minimum="1" Maximum="10000" ValueChanged="ResizeWidthChanged"/>
+                        <Label Content="Height:" Margin="0,10,0,0"/>
+                        <xctk:IntegerUpDown Minimum="1" Maximum="10000" ValueChanged="ResizeHeightChanged"/>
+                    </StackPanel>
+                </Expander>
 
-                        <Label Content="Resize value:" Margin="0,10,0,0"/>
-                        <xctk:DecimalUpDown Minimum="0.1" Maximum="2" Increment="0.1" FormatString="F1" ValueChanged="ResizeValueChanged"/>
+                <Expander Header="Flip" IsExpanded="False">
+                    <StackPanel Margin="10">
+                        <CheckBox Content="Enable Flip" Checked="EnableFlip" Unchecked="DisableFlip"/>
+                        <Label Content="Flip Directions:" Margin="0,10,0,0"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <CheckBox Content="Horizontal" Margin="0,0,10,0" Checked="FlipHorizontalChanged" Unchecked="FlipHorizontalChanged"/>
+                            <CheckBox Content="Vertical" Checked="FlipVerticalChanged" Unchecked="FlipVerticalChanged"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+
+                <Expander Header="Brightness" IsExpanded="False">
+                    <StackPanel Margin="10">
+                        <CheckBox Content="Enable Brightness" Checked="EnableBrightness" Unchecked="DisableBrightness"/>
+                        <Label Content="Brightness (0.1-3.0):" Margin="0,10,0,0"/>
+                        <xctk:DecimalUpDown Minimum="0.1" Maximum="3" Increment="0.1" FormatString="F1" DefaultValue="1" ValueChanged="BrightnessChanged"/>
                     </StackPanel>
                 </Expander>
 

@@ -149,16 +149,13 @@ namespace LIMS.Logic.Tools
         /// </returns>
         public override bool IsInValidState(out string? errorMessage)
         {
-            if (!Enabled || (Enabled && !string.IsNullOrEmpty(watermarkPath))) 
-            {
-                errorMessage = null;
-                return true;
-            }
-            else
+            if (Enabled && string.IsNullOrEmpty(watermarkPath)) 
             {
                 errorMessage = "No watermark image has been selected!";
                 return false;
             }
+            errorMessage = null;
+            return true;
         }
     }
 }

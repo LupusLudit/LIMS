@@ -53,6 +53,37 @@
 		</summary>
 	</ClassMembers>
 
+	<ClassMembers name="ScaleTool">
+		<summary>
+			Tool that proportionally scales an image based on a scale factor.
+			The scale factor can range from 0 to 2.
+			Inherits from <see cref="ToolBase"/>.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="ResizeTool">
+		<summary>
+			Tool that resizes an image to specific width and height values.
+			Width and height must be greater than zero and within reasonable bounds.
+			Inherits from <see cref="ToolBase"/>.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="FlipTool">
+		<summary>
+			Tool that flips an image horizontally, vertically, or both.
+			Inherits from <see cref="ToolBase"/>.
+		</summary>
+	</ClassMembers>
+
+	<ClassMembers name="BrightnessTool">
+		<summary>
+			Tool that adjusts the brightness of an image.
+			Brightness multiplier must be greater than 0 and less than or equal to 3.
+			Inherits from <see cref="ToolBase"/>.
+		</summary>
+	</ClassMembers>
+
 	<ClassMembers name="TabContext">
 		<summary>
 			Represents the context of a tab in the application, managing both image storage and associated image-processing tools.

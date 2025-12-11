@@ -150,6 +150,93 @@
             <c>true</c> if all tools are in valid states; otherwise <c>false</c>.
             </returns>
         </member>
+        <member name="T:LIMS.Logic.Tools.BrightnessTool">
+            <summary>
+			Tool that adjusts the brightness of an image.
+			Brightness multiplier must be greater than 0 and less than or equal to 3.
+			Inherits from <see cref="T:LIMS.Logic.Tools.ToolBase" />.
+		</summary>
+        </member>
+        <member name="M:LIMS.Logic.Tools.BrightnessTool.Apply(LIMS.Logic.ImageLoading.ImageDataContainer)">
+            <summary>
+            Applies brightness adjustment to the provided image if the tool is enabled.
+            </summary>
+            <param name="image">The target <see cref="T:LIMS.Logic.ImageLoading.ImageDataContainer"/> to modify.</param>
+        </member>
+        <member name="M:LIMS.Logic.Tools.BrightnessTool.IsInValidState(System.String@)">
+            <summary>
+            Checks if the tool is in a valid state.
+            Since the input value is always checked it is not possible to force an error.
+            </summary>
+            <param name="errorMessage">Outputs an error message if invalid; always <c>null</c> in this tool.</param>
+            <returns>Always <c>true</c>.</returns>
+        </member>
+        <member name="T:LIMS.Logic.Tools.FlipTool">
+            <summary>
+			Tool that flips an image horizontally, vertically, or both.
+			Inherits from <see cref="T:LIMS.Logic.Tools.ToolBase" />.
+		</summary>
+        </member>
+        <member name="M:LIMS.Logic.Tools.FlipTool.Apply(LIMS.Logic.ImageLoading.ImageDataContainer)">
+            <summary>
+            Applies flipping to the provided image if the tool is enabled.
+            </summary>
+            <param name="image">The target <see cref="T:LIMS.Logic.ImageLoading.ImageDataContainer"/> to modify.</param>
+        </member>
+        <member name="M:LIMS.Logic.Tools.FlipTool.IsInValidState(System.String@)">
+            <summary>
+            Checks if at least one flip direction is enabled when the tool is active.
+            </summary>
+            <param name="errorMessage">Outputs an error message if no direction is selected.</param>
+            <returns><c>true</c> if valid; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="T:LIMS.Logic.Tools.ResizeTool">
+            <summary>
+			Tool that resizes an image to specific width and height values.
+			Width and height must be greater than zero and within reasonable bounds.
+			Inherits from <see cref="T:LIMS.Logic.Tools.ToolBase" />.
+		</summary>
+        </member>
+        <member name="M:LIMS.Logic.Tools.ResizeTool.Apply(LIMS.Logic.ImageLoading.ImageDataContainer)">
+            <summary>
+            Applies resizing to the provided image if tool is enabled and width/height are valid.
+            </summary>
+            <param name="image">The target <see cref="T:LIMS.Logic.ImageLoading.ImageDataContainer"/> to modify.</param>
+        </member>
+        <member name="M:LIMS.Logic.Tools.ResizeTool.IsInValidState(System.String@)">
+            <summary>
+            Checks whether the tool is in a valid state for execution.
+            </summary>
+            <param name="errorMessage">Outputs an error message if width or height is invalid.</param>
+            <returns><c>true</c> if width and height are valid or tool is disabled; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:LIMS.Logic.Tools.ResizeTool.InValidRange(System.Int32)">
+            <summary>
+            Checks if the value (for the width/height) is in the valid range (between 1 and 10000).
+            </summary> 
+            <param name="value">The value.</param>
+            <returns><c>true</c> if in valid range; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="T:LIMS.Logic.Tools.ScaleTool">
+            <summary>
+			Tool that proportionally scales an image based on a scale factor.
+			The scale factor can range from 0 to 2.
+			Inherits from <see cref="T:LIMS.Logic.Tools.ToolBase" />.
+		</summary>
+        </member>
+        <member name="M:LIMS.Logic.Tools.ScaleTool.Apply(LIMS.Logic.ImageLoading.ImageDataContainer)">
+            <summary>
+            Applies scaling to the provided image if the tool is enabled.
+            </summary>
+            <param name="image">The target <see cref="T:LIMS.Logic.ImageLoading.ImageDataContainer"/> to modify.</param>
+        </member>
+        <member name="M:LIMS.Logic.Tools.ScaleTool.IsInValidState(System.String@)">
+            <summary>
+            Determines whether the tool is in a valid state.
+            </summary>
+            <param name="errorMessage">Outputs an error message if the tool is invalid.</param>
+            <returns>Always <c>true</c> because any valid scale is acceptable.</returns>
+        </member>
         <member name="T:LIMS.Logic.Tools.ToolBase">
             <summary>
 			Abstract base class for all image-processing tools.
@@ -349,11 +436,14 @@
         </member>
         <member name="M:LIMS.UI.Panels.PreviewPanel.ImageSelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
             <summary>
-            Handles the selection change in the image list and updates the preview image.
-            Applies all enabled tools from <see cref="P:LIMS.Logic.TabContext.ToolsManager"/> to the selected image.
+            Handles the selection change in the image list.
             </summary>
-            <param name="sender">The source of the selection change event.</param>
-            <param name="e">The selection changed event arguments.</param>
+        </member>
+        <member name="M:LIMS.UI.Panels.PreviewPanel.UpdatePreviewAsync">
+            <summary>
+            Asynchronously updates the preview image.
+            Cancels any previous ongoing updates to ensure UI responsiveness.
+            </summary>
         </member>
         <member name="M:LIMS.UI.Panels.PreviewPanel.InitializeComponent">
             <summary>
@@ -370,40 +460,20 @@
             ToolsPanel
             </summary>
         </member>
-        <member name="M:LIMS.UI.Panels.ToolsPanel.EnableWatermark(System.Object,System.Windows.RoutedEventArgs)">
+        <member name="M:LIMS.UI.Panels.ToolsPanel.RegisterTools">
             <summary>
-            Enables the watermark tool and refreshes the preview.
-            </summary>
-        </member>
-        <member name="M:LIMS.UI.Panels.ToolsPanel.DisableWatermark(System.Object,System.Windows.RoutedEventArgs)">
-            <summary>
-            Disables the watermark tool and refreshes the preview.
-            </summary>
-        </member>
-        <member name="M:LIMS.UI.Panels.ToolsPanel.OnBrowseButtonClicked(System.Object,System.Windows.RoutedEventArgs)">
-            <summary>
-            Handles the Browse button click to select a watermark image file.
-            Sets the selected file as the watermark path for <see cref="T:LIMS.Logic.Tools.WatermarkTool"/>.
-            </summary>
-        </member>
-        <member name="M:LIMS.UI.Panels.ToolsPanel.WatermarkPositionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
-            <summary>
-            Handles changes in the watermark position ComboBox.
-            Updates <see cref="P:LIMS.Logic.Tools.WatermarkTool.Position"/> and refreshes the preview.
-            </summary>
-        </member>
-        <member name="M:LIMS.UI.Panels.ToolsPanel.OpacitySliderValueChanged(System.Object,System.Windows.RoutedPropertyChangedEventArgs{System.Double})">
-            <summary>
-            Handles changes in the opacity slider.
-            Updates <see cref="P:LIMS.Logic.Tools.WatermarkTool.Opacity"/> and refreshes the preview.
+            Registers all tools with the TabContext ToolsManager.
             </summary>
         </member>
         <member name="M:LIMS.UI.Panels.ToolsPanel.ToggleTool(LIMS.Logic.Tools.ToolBase,System.Boolean)">
             <summary>
-            Toggles the selected tool on or off.
+            Toggles a tool and refreshes the preview.
             </summary>
-            <param name="tool">tool to be toggled.</param>
-            <param name="active">if set to <c>true</c> [active].</param>
+        </member>
+        <member name="M:LIMS.UI.Panels.ToolsPanel.ApplyToolValue(System.Action,System.String)">
+            <summary>
+            Safely applies a property change to a tool and refreshes the preview.
+            </summary>
         </member>
         <member name="M:LIMS.UI.Panels.ToolsPanel.InitializeComponent">
             <summary>
@@ -424,36 +494,6 @@
             <returns>
             The bitmap image.
             </returns>
-        </member>
-        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
-            <summary>
-            GeneratedInternalTypeHelper
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
-            <summary>
-            CreateInstance
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            GetPropertyValue
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            SetPropertyValue
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
-            <summary>
-            CreateDelegate
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
-            <summary>
-            AddEventHandler
-            </summary>
         </member>
     </members>
 </doc>
