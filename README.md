@@ -63,7 +63,7 @@ Currently, the application supports applying watermarks to imported files, with 
 
 ## Running the program
 
-You can download the latest release of LIMS here: [v1.0.1](https://github.com/LupusLudit/LIMS/releases/tag/v1.0.1)
+You can download the latest release of LIMS here: [v1.0.2](https://github.com/LupusLudit/LIMS/releases/tag/v.1.0.2)
 
 **To run the program:**  
 1. Download the compressed release files.  
