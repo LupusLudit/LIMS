@@ -309,6 +309,13 @@
             MainWindow
             </summary>
         </member>
+        <member name="M:LIMS.UI.MainWindow.SetBusyBar(System.Boolean,System.String)">
+            <summary>
+            Assigns certain values to the global busy bar.
+            </summary>
+            <param name="isBusy">if set to <c>true</c> busy bar is shown; otherwise it will be hidden.</param>
+            <param name="content">The text content to be displayed inside of the busy bar.</param>
+        </member>
         <member name="M:LIMS.UI.MainWindow.InitializeComponent">
             <summary>
             InitializeComponent
@@ -356,9 +363,9 @@
             </summary>
             <param name="filePaths">The paths of the images to add to the preview panel.</param>
         </member>
-        <member name="M:LIMS.UI.Panels.ActionPanel.SaveAllImages(System.String)">
+        <member name="M:LIMS.UI.Panels.ActionPanel.ExportAllImages(System.String)">
             <summary>
-            Saves all images currently stored in <see cref="P:LIMS.Logic.TabContext.Storage"/> to the specified folder.
+            Exports all images currently stored in <see cref="P:LIMS.Logic.TabContext.Storage"/> to the specified folder.
             </summary>
             <param name="folder">The destination folder where images will be saved.</param>
         </member>
@@ -494,6 +501,36 @@
             <returns>
             The bitmap image.
             </returns>
+        </member>
+        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+            <summary>
+            GeneratedInternalTypeHelper
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            CreateInstance
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            GetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            SetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+            <summary>
+            CreateDelegate
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+            <summary>
+            AddEventHandler
+            </summary>
         </member>
     </members>
 </doc>

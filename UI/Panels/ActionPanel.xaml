@@ -28,11 +28,16 @@
                 <Button Content="Start" Height="40" Margin="0,0,0,5" Click="OnStartButtonClick"/>
             </StackPanel>
 
+            <StackPanel Grid.Column="1" Margin="10">
+                <Label Content="Apply all changes:"/>
+                <Button Content="Start" Height="40" Margin="0,0,0,5" Click="OnStartButtonClick"/>
+            </StackPanel>
+
             <StackPanel Grid.Column="2" Margin="10">
                 <Label Content="Remove all images:"/>
                 <Button Content="Clear" Height="40" Margin="0,0,0,5" Click="OnClearButtonClick"/>
             </StackPanel>
-
         </Grid>
     </Border>
+
 </UserControl>

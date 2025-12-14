@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:LIMS.UI"
         xmlns:panels="clr-namespace:LIMS.UI.Panels"
         mc:Ignorable="d"
@@ -11,24 +12,29 @@
         ResizeMode="CanResize">
     
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <panels:HeaderPanel x:Name="HeaderPanelControl" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0"/>
+            <panels:HeaderPanel x:Name="HeaderPanelControl" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0"/>
 
-        <panels:ToolsPanel x:Name="ToolsPanelControl" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"/>
+            <panels:ToolsPanel x:Name="ToolsPanelControl" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"/>
 
-        <panels:PreviewPanel x:Name="PreviewPanelControl" Grid.Row="1" Grid.Column="1"/>
+            <panels:PreviewPanel x:Name="PreviewPanelControl" Grid.Row="1" Grid.Column="1"/>
 
-        <panels:ActionPanel x:Name="ActionPanelControl" Grid.Row="2" Grid.Column="1"/>
+            <panels:ActionPanel x:Name="ActionPanelControl" Grid.Row="2" Grid.Column="1"/>
+        </Grid>
+
+        <xctk:BusyIndicator IsBusy="False" Name="GlobalBusyBar" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
 
     </Grid>
     

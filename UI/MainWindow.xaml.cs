@@ -1,6 +1,7 @@
 ﻿using LIMS.Logic;
 using System.Windows;
 using LIMS.UI.Panels;
+using LIMS.Logic.Events;
 
 namespace LIMS.UI
 {
@@ -18,6 +19,7 @@ namespace LIMS.UI
         {
             InitializeComponent();
             tabContext = new TabContext();
+            BusyStateChangedEvent.OnBusyStateChanged += SetBusyBar;
 
             ActionPanelControl.PreviewPanelReference = PreviewPanelControl;
             ActionPanelControl.TabContext = tabContext;
@@ -26,7 +28,36 @@ namespace LIMS.UI
             ToolsPanelControl.TabContext = tabContext;
 
             PreviewPanelControl.TabContext = tabContext;
+
         }
+
+        /// <summary>
+        /// Assigns certain values to the global busy bar.
+        /// </summary>
+        /// <param name="isBusy">if set to <c>true</c> busy bar is shown; otherwise it will be hidden.</param>
+        /// <param name="content">The text content to be displayed inside of the busy bar.</param>
+        public void SetBusyBar(bool isBusy, string content = "Processing...")
+        {
+            Dispatcher.Invoke(() =>
+            {
+                GlobalBusyBar.IsBusy = isBusy;
+                GlobalBusyBar.BusyContent = content;
+            });
+        }
+
+        /// <summary>
+        /// OnClosed override ensuring that the <see cref="BusyStateChangedEvent"/>
+        /// unsubscribes from the SetBusyBar method.
+        /// This method exists in case UI resets will be necessary
+        /// or in case new Windows will have to be added in the future.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+        protected override void OnClosed(EventArgs e)
+        {
+            BusyStateChangedEvent.OnBusyStateChanged -= SetBusyBar;
+            base.OnClosed(e);
+        }
+
 
     }
 }

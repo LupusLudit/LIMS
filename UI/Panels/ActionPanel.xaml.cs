@@ -1,5 +1,6 @@
 ﻿using LIMS.Debugging;
 using LIMS.Logic;
+using LIMS.Logic.Events;
 using LIMS.Logic.ImageLoading;
 using Microsoft.Win32;
 using System.IO;
@@ -94,7 +95,7 @@ namespace LIMS.UI.Panels
         /// Validates tools, processes all images, saves them to the selected folder,
         /// clears storage, and updates the preview panel.
         /// </summary>
-        public void OnStartButtonClick(object sender, RoutedEventArgs e)
+        public async void OnStartButtonClick(object sender, RoutedEventArgs e)
         {
             string? errorMessage = null;
             if (!tabContext.ToolsInValidStates(out errorMessage))
@@ -112,8 +113,14 @@ namespace LIMS.UI.Panels
                     string destinationFolder = dialog.FolderName;
                     if (!string.IsNullOrEmpty(destinationFolder))
                     {
-                        tabContext.ProcessAllTools();
-                        SaveAllImages(destinationFolder);
+                        BusyStateChangedEvent.RaiseBusyStateChanged(true, "Exporting images...");
+
+                        await Task.Run(() =>
+                        {
+                            tabContext.ProcessAllTools();
+                            ExportAllImages(destinationFolder);
+                        });
+
                         tabContext.Storage.Clear();
                         PreviewPanelReference.ClearImages();
 
@@ -121,10 +128,14 @@ namespace LIMS.UI.Panels
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("An error occurred during image processing.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Logger.Error(ex.Message);
+            }
+            finally
+            {
+                BusyStateChangedEvent.RaiseBusyStateChanged(false);
             }
 
         }
@@ -160,10 +171,10 @@ namespace LIMS.UI.Panels
         }
 
         /// <summary>
-        /// Saves all images currently stored in <see cref="TabContext.Storage"/> to the specified folder.
+        /// Exports all images currently stored in <see cref="TabContext.Storage"/> to the specified folder.
         /// </summary>
         /// <param name="folder">The destination folder where images will be saved.</param>
-        private void SaveAllImages(string folder)
+        private void ExportAllImages(string folder)
         {
             foreach (var img in tabContext!.Storage.GetAllImages())
             {
