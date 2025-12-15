@@ -44,8 +44,10 @@ namespace LIMS.UI.Panels
                     Multiselect = true
                 };
 
+
                 if (dialog.ShowDialog() == true)
                 {
+                    BusyStateChangedEvent.RaiseBusyStateChanged(true, "Importing images...");
                     await ImageLoader.LoadImagesAsync(dialog.FileNames, tabContext.Storage);
 
                     SendPathsToPreviewPanel(dialog.FileNames);
@@ -55,6 +57,10 @@ namespace LIMS.UI.Panels
             {
                 MessageBox.Show("An error occurred while importing images.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Logger.Error(ex.Message);
+            }
+            finally
+            {
+                BusyStateChangedEvent.RaiseBusyStateChanged(false);
             }
         }
 

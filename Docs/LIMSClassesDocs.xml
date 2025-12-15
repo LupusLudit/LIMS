@@ -136,4 +136,12 @@
 		</summary>
 	</ClassMembers>
 
+	<ClassMembers name="BusyStateChangedEvent">
+		<summary>
+			Static class representing a global event for indicating changes in the application's busy state.
+			It exposes an event <see cref="OnBusyStateChanged"/> that clients can subscribe to,
+			which is raised whenever the application enters or exits a busy state.
+		</summary>
+	</ClassMembers>
+
 </ClassDocs>

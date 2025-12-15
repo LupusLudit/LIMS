@@ -75,7 +75,7 @@ namespace LIMS.UI.Panels
             catch (Exception ex)
             {
                 MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
+                Logger.Error($"{errorMessage}: {ex.Message}");
             }
         }
 

@@ -76,6 +76,15 @@
             Thread-safe.
             </remarks>
         </member>
+        <member name="M:LIMS.Logic.Core.DataStorage.TryRemoveImage(System.String,System.Boolean@)">
+            <summary>
+            Tries to remove an image from the storage.
+            Returns a boolean providing information
+            about the success of the operation.
+            </summary>
+            <param name="filePath">The file path to the image to be deleted</param>
+            <param name="removed">if set to <c>true</c> the image was successfully removed; otherwise <c>false</c>.</param>
+        </member>
         <member name="M:LIMS.Logic.Core.DataStorage.GetAllImages">
             <summary>
             Retrieves a list of all stored images.
@@ -100,6 +109,13 @@
             The processing is performed in parallel for improved efficiency.
             Each enabled tool in <see cref="P:LIMS.Logic.Tools.ToolsManager.Tools"/> is applied to each image.
             </remarks>
+        </member>
+        <member name="T:LIMS.Logic.Events.BusyStateChangedEvent">
+            <summary>
+			Static class representing a global event for indicating changes in the application's busy state.
+			It exposes an event <see cref="E:LIMS.Logic.Events.BusyStateChangedEvent.OnBusyStateChanged" /> that clients can subscribe to,
+			which is raised whenever the application enters or exits a busy state.
+		</summary>
         </member>
         <member name="T:LIMS.Logic.ImageLoading.ImageDataContainer">
             <summary>
@@ -314,7 +330,16 @@
             Assigns certain values to the global busy bar.
             </summary>
             <param name="isBusy">if set to <c>true</c> busy bar is shown; otherwise it will be hidden.</param>
-            <param name="content">The text content to be displayed inside of the busy bar.</param>
+            <param name="message">The text content to be displayed inside of the busy bar.</param>
+        </member>
+        <member name="M:LIMS.UI.MainWindow.OnClosed(System.EventArgs)">
+            <summary>
+            OnClosed override ensuring that the <see cref="T:LIMS.Logic.Events.BusyStateChangedEvent"/>
+            unsubscribes from the SetBusyBar method.
+            This method exists in case UI resets will be necessary
+            or in case new Windows will have to be added in the future.
+            </summary>
+            <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
         </member>
         <member name="M:LIMS.UI.MainWindow.InitializeComponent">
             <summary>
@@ -419,17 +444,11 @@
             PreviewPanel
             </summary>
         </member>
-        <member name="M:LIMS.UI.Panels.PreviewPanel.LoadImageNamesIntoUI">
-            <summary>
-            Updates the UI list with the names of the currently loaded images.
-            Automatically selects the first image if any exist.
-            </summary>
-        </member>
         <member name="M:LIMS.UI.Panels.PreviewPanel.AddImage(System.String)">
             <summary>
             Adds an image to the preview panel and updates the UI list.
             </summary>
-            <param name="filePath">The full file path of the image to add.</param>
+            <param name="fullPath">The path to  the image to add.</param>
         </member>
         <member name="M:LIMS.UI.Panels.PreviewPanel.ClearImages">
             <summary>
@@ -444,6 +463,11 @@
         <member name="M:LIMS.UI.Panels.PreviewPanel.ImageSelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
             <summary>
             Handles the selection change in the image list.
+            </summary>
+        </member>
+        <member name="M:LIMS.UI.Panels.PreviewPanel.DeleteSpecificImage(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Deletes an image specified by the user in the UI.
             </summary>
         </member>
         <member name="M:LIMS.UI.Panels.PreviewPanel.UpdatePreviewAsync">

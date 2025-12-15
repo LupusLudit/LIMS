@@ -15,10 +15,26 @@
                 </Grid.ColumnDefinitions>
 
                 <Image x:Name="PreviewImage" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0"/>
-
+                
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Column="1">
-                    <ListBox x:Name="ImageListBox"/>
+                    <ListBox x:Name="ImageListBox" HorizontalContentAlignment="Stretch">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="{Binding FileName}"  Grid.Column="0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+
+                                    <Button Style="{StaticResource DeleteButtonStyle}" Content="X" Grid.Column="1" VerticalAlignment="Center" Margin="6,0,0,0" Click="DeleteSpecificImage"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </ScrollViewer>
+
 
             </Grid>
         </Border>

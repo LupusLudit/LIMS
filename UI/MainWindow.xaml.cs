@@ -35,13 +35,13 @@ namespace LIMS.UI
         /// Assigns certain values to the global busy bar.
         /// </summary>
         /// <param name="isBusy">if set to <c>true</c> busy bar is shown; otherwise it will be hidden.</param>
-        /// <param name="content">The text content to be displayed inside of the busy bar.</param>
-        public void SetBusyBar(bool isBusy, string content = "Processing...")
+        /// <param name="message">The text content to be displayed inside of the busy bar.</param>
+        public void SetBusyBar(bool isBusy, string message = "Processing...")
         {
             Dispatcher.Invoke(() =>
             {
                 GlobalBusyBar.IsBusy = isBusy;
-                GlobalBusyBar.BusyContent = content;
+                GlobalBusyBar.BusyContent = message;
             });
         }
 

@@ -1,4 +1,5 @@
-﻿using LIMS.Logic.ImageLoading;
+﻿using LIMS.Debugging;
+using LIMS.Logic.ImageLoading;
 
 namespace LIMS.Logic.Core
 {
@@ -58,6 +59,21 @@ namespace LIMS.Logic.Core
             lock (lockObject)
             {
                 images.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Tries to remove an image from the storage.
+        /// Returns a boolean providing information
+        /// about the success of the operation.
+        /// </summary>
+        /// <param name="filePath">The file path to the image to be deleted</param>
+        /// <param name="removed">if set to <c>true</c> the image was successfully removed; otherwise <c>false</c>.</param>
+        public void TryRemoveImage(string filePath, out bool removed)
+        {
+            lock (lockObject)
+            {
+                removed = images.Remove(filePath);
             }
         }
 
