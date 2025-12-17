@@ -21,6 +21,8 @@ Currently, the application supports applying watermarks to imported files, with 
 │   │   ├── ToolsManager.cs
 │   │   └── ...
 │   └── TabContext.cs
+├── Safety/
+│   └── SafeExecutor.cs
 ├── Debugging/
 │   └── Logger.cs
 ├── Tests/
@@ -45,6 +47,7 @@ Currently, the application supports applying watermarks to imported files, with 
     * Core/ – Core classes for data storage and processing of tools.
     * ImageLoading/ – Classes and structures for loading and storing image data.
     * Tools/ – Base classes and manager for image processing tools.
+* Safety/ – Contains special safety class(es) which are used to catch and handle possible errors.
 * Debugging/ – Debugging utilities and logging functionality.
 * Tests/ – Unit tests for various components of the application. Note: The repository does not include test runners or frameworks. But the test files can be used to generate runnable tests in local environments.
 	* CoreTests/ – Tests for core logic and data handling.
