@@ -2,6 +2,7 @@
 using LIMS.Logic;
 using LIMS.Logic.Events;
 using LIMS.Logic.ImageLoading;
+using LIMS.Safety;
 using LIMS.Vendor;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -57,14 +58,6 @@ namespace LIMS.UI.Panels
         }
 
         /// <summary>
-        /// Refreshes the preview image by re-applying all enabled tools to the currently selected image.
-        /// </summary>
-        public void RefreshPreview()
-        {
-            UpdatePreviewAsync();
-        }
-
-        /// <summary>
         /// Handles the selection change in the image list.
         /// </summary>
         private void ImageSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -78,111 +71,113 @@ namespace LIMS.UI.Panels
         /// </summary>
         private void DeleteSpecificImage(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                if (sender is Button button && button.DataContext is ImageListItem item && tabContext != null)
+            SafeExecutor.Execute(
+                () =>
                 {
-                    tabContext.Storage.TryRemoveImage(item.FullPath, out bool removed);
-                    if (removed)
+                    if (sender is Button button && button.DataContext is ImageListItem item && tabContext != null)
                     {
+                        tabContext.Storage.TryRemoveImage(item.FullPath, out bool removed);
+                        if (removed)
+                        {
+                            imageListItems.Remove(item);
+                            UpdatePreviewAsync();
+                        }
+                        else
+                        {
+                            string warningMessage = "Attempting to remove a none existing image.";
+                            MessageBox.Show(warningMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            Logger.Warning(warningMessage);
+                        }
                         imageListItems.Remove(item);
-                        UpdatePreviewAsync();
                     }
-                    else
-                    {
-                        string warningMessage = "Attempting to remove a none existing image.";
-                        MessageBox.Show(warningMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        Logger.Warning(warningMessage);
-                    }
-                    imageListItems.Remove(item);
-                }
-            }
-            catch (Exception ex) 
-            {
-                MessageBox.Show("An error occurred while attempting to remove an image.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error($"An error occurred while attempting to remove an image: {ex.Message}");
-            }
+                },
+                "An error occurred while attempting to remove an image."
+            );
         }
 
         /// <summary>
         /// Asynchronously updates the preview image.
         /// Cancels any previous ongoing updates to ensure UI responsiveness.
         /// </summary>
-        private async void UpdatePreviewAsync()
+        /// <remarks>
+        /// In this method it was avoided (on purpose)
+        /// to pass the token to Task.Run.
+        /// Doing this might trigger the <see cref="TaskCanceledException"/>.
+        /// This exception has to be ignored, but the SafeExecutor would catch it as
+        /// an error - this is unwanted behaviour.
+        /// To prevent this, the cancelation token is checked manually instead.
+        /// </remarks>
+        public async Task UpdatePreviewAsync()
         {
             cancellationTokenSource?.Cancel();
             cancellationTokenSource = new CancellationTokenSource();
             var token = cancellationTokenSource.Token;
 
-            try
-            {
-                if (ImageListBox.SelectedIndex < 0 || tabContext == null)
+            await SafeExecutor.ExecuteAsync(
+                action: async () =>
                 {
-                    PreviewImage.Source = null;
-                    return;
-                }
-
-                ImageListItem? selected = ImageListBox.SelectedItem as ImageListItem;
-                string? fullPath = selected?.FullPath;
-                if (selected == null || fullPath == null)
-                {
-                    PreviewImage.Source = null;
-                    return;
-                }
-
-                tabContext.Storage.TryGetImage(fullPath, out ImageDataContainer? sourceImage);
-
-                if (sourceImage != null && sourceImage.RawBytes != null)
-                {
-                    byte[] originalBytes = (byte[])sourceImage.RawBytes.Clone();
-                    var toolsToApply = tabContext.ToolsManager.Tools.Where(t => t.Enabled).ToList();
-
-                    BusyStateChangedEvent.RaiseBusyStateChanged(true);
-
-                    BitmapImage? resultImage = await Task.Run(() =>
+                    if (ImageListBox.SelectedIndex < 0 || tabContext == null)
                     {
-                        if (token.IsCancellationRequested)
-                        {
-                            return null;
-                        }
+                        PreviewImage.Source = null;
+                        return;
+                    }
 
-                        ImageDataContainer tempContainer = new ImageDataContainer(fullPath, originalBytes);
+                    ImageListItem? selected = ImageListBox.SelectedItem as ImageListItem;
+                    string? fullPath = selected?.FullPath;
 
-                        foreach (var tool in toolsToApply)
+                    if (selected == null || fullPath == null)
+                    {
+                        PreviewImage.Source = null;
+                        return;
+                    }
+
+                    tabContext.Storage.TryGetImage(fullPath, out ImageDataContainer? sourceImage);
+
+                    if (sourceImage != null && sourceImage.RawBytes != null)
+                    {
+                        if (token.IsCancellationRequested) return;
+
+                        BusyStateChangedEvent.RaiseBusyStateChanged(true);
+
+                        byte[] originalBytes = (byte[])sourceImage.RawBytes.Clone();
+                        var toolsToApply = tabContext.ToolsManager.Tools.Where(t => t.Enabled).ToList();
+                        BitmapImage? resultImage = await Task.Run(() =>
                         {
-                            if (token.IsCancellationRequested)
+                            if (token.IsCancellationRequested) return null;
+
+                            ImageDataContainer tempContainer = new ImageDataContainer(fullPath, originalBytes);
+
+                            foreach (var tool in toolsToApply)
+                            {
+                                if (token.IsCancellationRequested) return null;
+                                tool.Apply(tempContainer);
+                            }
+
+                            if (tempContainer.RawBytes == null || token.IsCancellationRequested)
                             {
                                 return null;
                             }
 
-                            tool.Apply(tempContainer);
-                        }
+                            return BitmapLoader.LoadBitmapImage(tempContainer.RawBytes);
 
-                        if (tempContainer.RawBytes == null || token.IsCancellationRequested)
+                        }); 
+
+                        if (resultImage != null && !token.IsCancellationRequested)
                         {
-                            return null;
+                            PreviewImage.Source = resultImage;
                         }
-
-                        return BitmapLoader.LoadBitmapImage(tempContainer.RawBytes);
-
-                    }, CancellationToken.None);
-
-                    if (resultImage != null && !token.IsCancellationRequested)
-                    {
-                        PreviewImage.Source = resultImage;
                     }
+                },
+                errorMessage: "An error occurred while updating the image preview.",
+                finallyAction: () =>
+                {
+                    if (!token.IsCancellationRequested)
+                    {
+                        BusyStateChangedEvent.RaiseBusyStateChanged(false);
+                    }
+                    return Task.CompletedTask;
                 }
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while updating the image preview.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error($"Error while updating the image preview: {ex.Message}");
-            }
-            finally
-            {
-                BusyStateChangedEvent.RaiseBusyStateChanged(false);
-            }
+            );
         }
     }
 

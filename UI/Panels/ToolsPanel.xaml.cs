@@ -1,6 +1,7 @@
 ﻿using LIMS.Debugging;
 using LIMS.Logic;
 using LIMS.Logic.Tools;
+using LIMS.Safety;
 using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Controls;
@@ -44,38 +45,45 @@ namespace LIMS.UI.Panels
         }
 
         /// <summary>
-        /// Toggles a tool and refreshes the preview.
+        /// Safely enables the tool or on off.
         /// </summary>
+        /// <param name="tool">The tool to be toggled.</param>
+        /// <param name="active">if set to <c>true</c> tool will be enabled; otherwise it will be disabled.</param>
         private void ToggleTool(ToolBase? tool, bool active)
         {
             if (tool == null) return;
 
-            try
-            {
-                tool.Enabled = active;
-                PreviewPanelReference?.RefreshPreview();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred while toggling {tool.GetType().Name}.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
-            }
+
+            SafeExecutor.Execute(
+                () => 
+                {
+                    tool.Enabled = active;
+                    PreviewPanelReference?.UpdatePreviewAsync();
+                },
+                $"An error occurred while toggling {tool.GetType().Name}."
+            );
         }
 
         /// <summary>
-        /// Safely applies a property change to a tool and refreshes the preview.
+        /// Safely applies the specified action and refreshes the image preview.
         /// </summary>
-        private void ApplyToolValue(Action applyAction, string errorMessage)
+        /// <param name="applyAction">The action to be applied.</param>
+        /// <param name="errorMessage">The error message to be displayed in case action fails.</param>
+        private void ApplyActionAndRefresh(Action applyAction, string errorMessage)
         {
-            try
+            bool success = false;
+            SafeExecutor.Execute(
+                () => 
+                {
+                    applyAction();
+                    success = true;
+                },
+                errorMessage
+             );
+
+            if (success)
             {
-                applyAction();
-                PreviewPanelReference?.RefreshPreview();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error($"{errorMessage}: {ex.Message}");
+                PreviewPanelReference?.UpdatePreviewAsync();
             }
         }
 
@@ -84,7 +92,7 @@ namespace LIMS.UI.Panels
 
         private void OnBrowseButtonClicked(object sender, RoutedEventArgs e)
         {
-            ApplyToolValue(() =>
+            ApplyActionAndRefresh(() =>
             {
                 var dialog = new OpenFileDialog
                 {
@@ -101,7 +109,7 @@ namespace LIMS.UI.Panels
 
         private void WatermarkPositionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ApplyToolValue(() =>
+            ApplyActionAndRefresh(() =>
             {
                 if (watermarkTool != null && WatermarkPositionComboBox.SelectedItem is ComboBoxItem item)
                 {
@@ -120,7 +128,7 @@ namespace LIMS.UI.Panels
 
         private void OpacitySliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) 
         {
-            ApplyToolValue(() => 
+            ApplyActionAndRefresh(() => 
             {
                 if (watermarkTool != null)
                 {
@@ -134,7 +142,7 @@ namespace LIMS.UI.Panels
 
         private void ScaleValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            ApplyToolValue(() =>
+            ApplyActionAndRefresh(() =>
             {
                 if (scaleTool != null && e.NewValue != null)
                 {
@@ -148,7 +156,7 @@ namespace LIMS.UI.Panels
 
         private void ResizeWidthChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            ApplyToolValue(() =>
+            ApplyActionAndRefresh(() =>
             {
                 if (resizeTool != null && e.NewValue != null)
                 {
@@ -159,7 +167,7 @@ namespace LIMS.UI.Panels
 
         private void ResizeHeightChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            ApplyToolValue(() =>
+            ApplyActionAndRefresh(() =>
             {
                 if (resizeTool != null && e.NewValue != null)
                 {
@@ -173,7 +181,7 @@ namespace LIMS.UI.Panels
 
         private void FlipHorizontalChanged(object sender, RoutedEventArgs e)
         {
-            ApplyToolValue(() =>
+            ApplyActionAndRefresh(() =>
             {
                 if (flipTool != null && sender is CheckBox comboBox)
                 {
@@ -184,7 +192,7 @@ namespace LIMS.UI.Panels
 
         private void FlipVerticalChanged(object sender, RoutedEventArgs e)
         {
-            ApplyToolValue(() =>
+            ApplyActionAndRefresh(() =>
             {
                 if (flipTool != null && sender is CheckBox comboBox)
                 {
@@ -199,7 +207,7 @@ namespace LIMS.UI.Panels
 
         private void BrightnessChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            ApplyToolValue(() =>
+            ApplyActionAndRefresh(() =>
             {
                 if (brightnessTool != null && e.NewValue != null)
                 {

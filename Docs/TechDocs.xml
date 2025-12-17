@@ -94,14 +94,14 @@
             Thread-safe.
             </remarks>
         </member>
-        <member name="T:LIMS.Logic.Core.ToolProcessor">
+        <member name="T:LIMS.Logic.Core.ProcessingEngine">
             <summary>
 			Class responsible for running enabled image-processing tools on all stored images.
 			It retrieves images from the DataStorage and applies each active ToolBase instance
 			from the ToolsManager in a parallelized manner to improve performance.
 		</summary>
         </member>
-        <member name="M:LIMS.Logic.Core.ToolProcessor.Run">
+        <member name="M:LIMS.Logic.Core.ProcessingEngine.Run">
             <summary>
             Executes all enabled tools on every image currently stored in <see cref="T:LIMS.Logic.Core.DataStorage"/>.
             </summary>
@@ -152,7 +152,7 @@
             Executes all enabled tools on all images stored in <see cref="P:LIMS.Logic.TabContext.Storage"/>.
             </summary>
             <remarks>
-            Internally creates a <see cref="T:LIMS.Logic.Core.ToolProcessor"/> and runs it.
+            Internally creates a <see cref="T:LIMS.Logic.Core.ProcessingEngine"/> and runs it.
             </remarks>
         </member>
         <member name="M:LIMS.Logic.TabContext.ToolsInValidStates(System.String@)">
@@ -315,6 +315,35 @@
             <c>true</c> if the tool is enabled and a watermark path has been set; otherwise <c>false</c>.
             </returns>
         </member>
+        <member name="T:LIMS.Safety.SafeExecutor">
+            <summary>
+			Static utility class responsible for safely executing synchronous and asynchronous actions
+			with standardized error handling.
+		</summary>
+        </member>
+        <member name="M:LIMS.Safety.SafeExecutor.Execute(System.Action,System.String,System.Action)">
+            <summary>
+            Safely executes the specified action.
+            </summary>
+            <param name="action">The action to be executed (in the try block).</param>
+            <param name="errorMessage">The error message to be displayed if the action fails.</param>
+            <param name="finallyAction">The action to be executed in the end (in the finally block).</param>
+        </member>
+        <member name="M:LIMS.Safety.SafeExecutor.ExecuteAsync(System.Func{System.Threading.Tasks.Task},System.String,System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            Safely executes an asynchronous action.
+            </summary>
+            <param name="action">The action to be executed (in the try block).</param>
+            <param name="errorMessage">The error message to be displayed if the action fails.</param>
+            <param name="finallyAction">The action to be executed in the end (in the finally block).</param>
+        </member>
+        <member name="M:LIMS.Safety.SafeExecutor.HandleError(System.Exception,System.String)">
+            <summary>
+            Shows the error to the user and logs it.
+            </summary>
+            <param name="ex">The exception to be logged.</param>
+            <param name="errorMessage">The error message to be displayed (and logged).</param>
+        </member>
         <member name="T:LIMS.UI.MainWindow">
             <summary>
 			The main window of the LIMS application.
@@ -355,21 +384,21 @@
             ActionPanel
             </summary>
         </member>
-        <member name="M:LIMS.UI.Panels.ActionPanel.OnImportFilesClick(System.Object,System.Windows.RoutedEventArgs)">
+        <member name="M:LIMS.UI.Panels.ActionPanel.OnImportFilesClickAsync(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Handles the click event for importing individual image files.
             Opens a file dialog for user selection, loads the images into <see cref="P:LIMS.Logic.TabContext.Storage"/>,
             and updates the <see cref="T:LIMS.UI.Panels.PreviewPanel"/>.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Panels.ActionPanel.OnImportFromFolderClick(System.Object,System.Windows.RoutedEventArgs)">
+        <member name="M:LIMS.UI.Panels.ActionPanel.OnImportFromFolderClickAsync(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Handles the click event for importing images from a folder.
             Filters images by allowed extensions, loads them into <see cref="P:LIMS.Logic.TabContext.Storage"/>,
             and updates the <see cref="T:LIMS.UI.Panels.PreviewPanel"/>.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Panels.ActionPanel.OnStartButtonClick(System.Object,System.Windows.RoutedEventArgs)">
+        <member name="M:LIMS.UI.Panels.ActionPanel.OnExportButtonClickAsync(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Handles the click event for the Start button.
             Validates tools, processes all images, saves them to the selected folder,
@@ -409,6 +438,12 @@
             HeaderPanel
             </summary>
         </member>
+        <member name="M:LIMS.UI.Panels.HeaderPanel.GetAppFontSize">
+            <summary>
+            Retrieves the size of the font.
+            </summary>
+            <returns>The font size (double).</returns>
+        </member>
         <member name="M:LIMS.UI.Panels.HeaderPanel.ZoomInClick(System.Object,System.Windows.RoutedEventArgs)">
             <summary>
             Performs the zoom in action (making the font larger) on click.
@@ -423,12 +458,6 @@
             <summary>
             Resets the zoom value to default size on click.
             </summary>
-        </member>
-        <member name="M:LIMS.UI.Panels.HeaderPanel.GetAppFontSize">
-            <summary>
-            Retrieves the size of the font.
-            </summary>
-            <returns>The font size (double).</returns>
         </member>
         <member name="M:LIMS.UI.Panels.HeaderPanel.InitializeComponent">
             <summary>
@@ -455,11 +484,6 @@
             Clears all images from the panel and resets the preview display.
             </summary>
         </member>
-        <member name="M:LIMS.UI.Panels.PreviewPanel.RefreshPreview">
-            <summary>
-            Refreshes the preview image by re-applying all enabled tools to the currently selected image.
-            </summary>
-        </member>
         <member name="M:LIMS.UI.Panels.PreviewPanel.ImageSelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
             <summary>
             Handles the selection change in the image list.
@@ -475,6 +499,14 @@
             Asynchronously updates the preview image.
             Cancels any previous ongoing updates to ensure UI responsiveness.
             </summary>
+            <remarks>
+            In this method it was avoided (on purpose)
+            to pass the token to Task.Run.
+            Doing this might trigger the <see cref="T:System.Threading.Tasks.TaskCanceledException"/>.
+            This exception has to be ignored, but the SafeExecutor would catch it as
+            an error - this is unwanted behaviour.
+            To prevent this, the cancelation token is checked manually instead.
+            </remarks>
         </member>
         <member name="M:LIMS.UI.Panels.PreviewPanel.InitializeComponent">
             <summary>
@@ -498,13 +530,17 @@
         </member>
         <member name="M:LIMS.UI.Panels.ToolsPanel.ToggleTool(LIMS.Logic.Tools.ToolBase,System.Boolean)">
             <summary>
-            Toggles a tool and refreshes the preview.
+            Safely enables the tool or on off.
             </summary>
+            <param name="tool">The tool to be toggled.</param>
+            <param name="active">if set to <c>true</c> tool will be enabled; otherwise it will be disabled.</param>
         </member>
-        <member name="M:LIMS.UI.Panels.ToolsPanel.ApplyToolValue(System.Action,System.String)">
+        <member name="M:LIMS.UI.Panels.ToolsPanel.ApplyActionAndRefresh(System.Action,System.String)">
             <summary>
-            Safely applies a property change to a tool and refreshes the preview.
+            Safely applies the specified action and refreshes the image preview.
             </summary>
+            <param name="applyAction">The action to be applied.</param>
+            <param name="errorMessage">The error message to be displayed in case action fails.</param>
         </member>
         <member name="M:LIMS.UI.Panels.ToolsPanel.InitializeComponent">
             <summary>

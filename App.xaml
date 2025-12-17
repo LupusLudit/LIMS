@@ -11,11 +11,33 @@
             <Setter Property="FontSize" Value="{DynamicResource GlobalFontSize}"/>
         </Style>
 
-        <Style x:Key="DeleteButtonStyle" TargetType="Button">
+        <Style x:Key="XButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Foreground" Value="#ef1325" />
             <Setter Property="Padding" Value="5,0,5,0"/>
+        </Style>
+
+        <Style x:Key="RedButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="Background" Value="#e82929" />
+            <Setter Property="Padding" Value="5,0,5,0"/>
+
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#d82222"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
     </Application.Resources>

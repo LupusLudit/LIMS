@@ -2,6 +2,7 @@
 using LIMS.Logic;
 using LIMS.Logic.Events;
 using LIMS.Logic.ImageLoading;
+using LIMS.Safety;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
@@ -34,34 +35,31 @@ namespace LIMS.UI.Panels
         /// Opens a file dialog for user selection, loads the images into <see cref="TabContext.Storage"/>,
         /// and updates the <see cref="PreviewPanel"/>.
         /// </summary>
-        public async void OnImportFilesClick(object sender, RoutedEventArgs e)
+        public async void OnImportFilesClickAsync(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var dialog = new OpenFileDialog
+            await SafeExecutor.ExecuteAsync(
+                action: async () =>
                 {
-                    Filter = $"Image Files|*{string.Join(";*", tabContext!.AllowedExtensions)}",
-                    Multiselect = true
-                };
+                    var dialog = new OpenFileDialog
+                    {
+                        Filter = $"Image Files|*{string.Join(";*", tabContext!.AllowedExtensions)}",
+                        Multiselect = true
+                    };
 
-
-                if (dialog.ShowDialog() == true)
+                    if (dialog.ShowDialog() == true)
+                    {
+                        BusyStateChangedEvent.RaiseBusyStateChanged(true, "Importing images...");
+                        await ImageLoader.LoadImagesAsync(dialog.FileNames, tabContext.Storage);
+                        SendPathsToPreviewPanel(dialog.FileNames);
+                    }
+                },
+                errorMessage: "An error occurred while importing images.",
+                finallyAction: () =>
                 {
-                    BusyStateChangedEvent.RaiseBusyStateChanged(true, "Importing images...");
-                    await ImageLoader.LoadImagesAsync(dialog.FileNames, tabContext.Storage);
-
-                    SendPathsToPreviewPanel(dialog.FileNames);
+                    BusyStateChangedEvent.RaiseBusyStateChanged(false);
+                    return Task.CompletedTask;
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while importing images.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
-            }
-            finally
-            {
-                BusyStateChangedEvent.RaiseBusyStateChanged(false);
-            }
+            );
         }
 
         /// <summary>
@@ -69,31 +67,30 @@ namespace LIMS.UI.Panels
         /// Filters images by allowed extensions, loads them into <see cref="TabContext.Storage"/>,
         /// and updates the <see cref="PreviewPanel"/>.
         /// </summary>
-        public async void OnImportFromFolderClick(object sender, RoutedEventArgs e)
+        public async void OnImportFromFolderClickAsync(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                OpenFolderDialog dialog = new OpenFolderDialog();
 
-                if (dialog.ShowDialog() == true)
+            await SafeExecutor.ExecuteAsync(
+                action: async () =>
                 {
-                    string? selectedFolder = dialog.FolderName;
-                    if (selectedFolder != null)
+                    OpenFolderDialog dialog = new OpenFolderDialog();
+
+                    if (dialog.ShowDialog() == true)
                     {
-                        List<string> loadedPaths = Directory.EnumerateFiles(selectedFolder)
-                            .Where(file => tabContext!.AllowedExtensions.Contains(Path.GetExtension(file).ToLower())).ToList();
+                        string? selectedFolder = dialog.FolderName;
+                        if (selectedFolder != null)
+                        {
+                            List<string> loadedPaths = Directory.EnumerateFiles(selectedFolder)
+                                .Where(file => tabContext!.AllowedExtensions.Contains(Path.GetExtension(file).ToLower())).ToList();
 
-                        await ImageLoader.LoadImagesAsync(loadedPaths, tabContext!.Storage);
+                            await ImageLoader.LoadImagesAsync(loadedPaths, tabContext!.Storage);
 
-                        SendPathsToPreviewPanel(loadedPaths);
+                            SendPathsToPreviewPanel(loadedPaths);
+                        }
                     }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while importing images from this folder.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
-            }
+                },
+                errorMessage: "An error occurred while importing images from this folder."
+            );
         }
 
         /// <summary>
@@ -101,49 +98,45 @@ namespace LIMS.UI.Panels
         /// Validates tools, processes all images, saves them to the selected folder,
         /// clears storage, and updates the preview panel.
         /// </summary>
-        public async void OnStartButtonClick(object sender, RoutedEventArgs e)
+        public async void OnExportButtonClickAsync(object sender, RoutedEventArgs e)
         {
-            string? errorMessage = null;
-            if (!tabContext.ToolsInValidStates(out errorMessage))
+            if (!tabContext!.ToolsInValidStates(out string? errorMessage))
             {
                 MessageBox.Show(errorMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                Logger.Warning(errorMessage!);
                 return;
             }
 
-            try
-            {
-                OpenFolderDialog dialog = new OpenFolderDialog();
-                if (dialog.ShowDialog() == true)
+            await SafeExecutor.ExecuteAsync(
+                action: async () =>
                 {
-                    string destinationFolder = dialog.FolderName;
-                    if (!string.IsNullOrEmpty(destinationFolder))
+                    OpenFolderDialog dialog = new OpenFolderDialog();
+                    if (dialog.ShowDialog() == true)
                     {
-                        BusyStateChangedEvent.RaiseBusyStateChanged(true, "Exporting images...");
-
-                        await Task.Run(() =>
+                        string destinationFolder = dialog.FolderName;
+                        if (!string.IsNullOrEmpty(destinationFolder))
                         {
-                            tabContext.ProcessAllTools();
-                            ExportAllImages(destinationFolder);
-                        });
+                            BusyStateChangedEvent.RaiseBusyStateChanged(true, "Exporting images...");
 
-                        tabContext.Storage.Clear();
-                        PreviewPanelReference.ClearImages();
+                            await Task.Run(() =>
+                            {
+                                tabContext.ProcessAllTools();
+                                ExportAllImages(destinationFolder);
+                            });
 
-                        MessageBox.Show("Images exported successfully!", "Export Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                            tabContext.Storage.Clear();
+                            PreviewPanelReference.ClearImages();
+
+                            MessageBox.Show("Images exported successfully!", "Export Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
                     }
+                },
+                errorMessage: "An error occurred during image processing.",
+                finallyAction: () => 
+                {
+                    BusyStateChangedEvent.RaiseBusyStateChanged(false);
+                    return Task.CompletedTask;
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred during image processing.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
-            }
-            finally
-            {
-                BusyStateChangedEvent.RaiseBusyStateChanged(false);
-            }
-
+            );
         }
 
         /// <summary>
@@ -152,16 +145,20 @@ namespace LIMS.UI.Panels
         /// </summary>
         public void OnClearButtonClick(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                tabContext!.Storage.Clear();
-                PreviewPanelReference.ClearImages();
-            }
-            catch (Exception ex) 
-            {
-                MessageBox.Show("An error occurred while clearing the images.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Logger.Error(ex.Message);
-            }
+            SafeExecutor.Execute(
+                () =>
+                {
+                    MessageBoxResult result = MessageBox.Show("Do you really want to proceed? This action will remove all images.",
+                        "Confirm image clearing", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        tabContext!.Storage.Clear();
+                        PreviewPanelReference.ClearImages();
+                    }
+                },
+                "An error occurred while clearing the images."
+            );
         }
 
         /// <summary>

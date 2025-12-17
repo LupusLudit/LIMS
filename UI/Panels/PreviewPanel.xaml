@@ -28,7 +28,7 @@
 
                                     <TextBlock Text="{Binding FileName}"  Grid.Column="0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
 
-                                    <Button Style="{StaticResource DeleteButtonStyle}" Content="X" Grid.Column="1" VerticalAlignment="Center" Margin="6,0,0,0" Click="DeleteSpecificImage"/>
+                                    <Button Style="{StaticResource XButtonStyle}" Content="X" Grid.Column="1" VerticalAlignment="Center" Margin="6,0,0,0" Click="DeleteSpecificImage"/>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

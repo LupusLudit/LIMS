@@ -15,12 +15,12 @@ namespace LIMS.Logic
         /// Executes all enabled tools on all images stored in <see cref="Storage"/>.
         /// </summary>
         /// <remarks>
-        /// Internally creates a <see cref="ToolProcessor"/> and runs it.
+        /// Internally creates a <see cref="ProcessingEngine"/> and runs it.
         /// </remarks>
         public void ProcessAllTools()
         {
-            ToolProcessor processor = new ToolProcessor(ToolsManager, Storage);
-            processor.Run();
+            ProcessingEngine processingEngine = new ProcessingEngine(ToolsManager, Storage);
+            processingEngine.Run();
         }
 
         /// <summary>

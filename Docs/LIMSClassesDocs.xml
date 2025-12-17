@@ -8,7 +8,7 @@
 		</summary>
 	</ClassMembers>
 
-	<ClassMembers name="ToolProcessor">
+	<ClassMembers name="ProcessingEngine">
 		<summary>
 			Class responsible for running enabled image-processing tools on all stored images.
 			It retrieves images from the DataStorage and applies each active ToolBase instance
@@ -143,5 +143,13 @@
 			which is raised whenever the application enters or exits a busy state.
 		</summary>
 	</ClassMembers>
+
+	<ClassMembers name="SafeExecutor">
+		<summary>
+			Static utility class responsible for safely executing synchronous and asynchronous actions
+			with standardized error handling.
+		</summary>
+	</ClassMembers>
+
 
 </ClassDocs>

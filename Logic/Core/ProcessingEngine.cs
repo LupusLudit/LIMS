@@ -3,13 +3,13 @@ using LIMS.Logic.Tools;
 
 namespace LIMS.Logic.Core
 {
-    /// <include file='../../Docs/LIMSClassesDocs.xml' path='ClassDocs/ClassMembers[@name="ToolProcessor"]/*'/>
-    public class ToolProcessor
+    /// <include file='../../Docs/LIMSClassesDocs.xml' path='ClassDocs/ClassMembers[@name="ProcessingEngine"]/*'/>
+    public class ProcessingEngine
     {
         private readonly ToolsManager toolsManager;
         private readonly DataStorage storage;
 
-        public ToolProcessor(ToolsManager toolsManager, DataStorage storage)
+        public ProcessingEngine(ToolsManager toolsManager, DataStorage storage)
         {
             this.toolsManager = toolsManager;
             this.storage = storage;
