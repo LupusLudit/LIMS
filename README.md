@@ -64,9 +64,16 @@ Currently, the application supports applying watermarks to imported files, with 
 - **WPF** (Windows Presentation Foundation) compatibility  
 - Optional (for code editing): Visual Studio 2022 or later for building from source
 
+## References
+
+- **Xceed WPF Toolkit**  
+  Used for extended WPF controls such as `BusyIndicator`, `DecimalUpDown`, and `IntegerUpDown`.  
+  XAML namespace: `http://schemas.xceed.com/wpf/xaml/toolkit`  
+  Project homepage & documentation: https://github.com/xceedsoftware/wpftoolkit
+
 ## Running the program
 
-You can download the latest release of LIMS here: [v1.0.2](https://github.com/LupusLudit/LIMS/releases/tag/v.1.0.2)
+You can download the latest release of LIMS here: [v1.0.3](https://github.com/LupusLudit/LIMS/releases/tag/v.1.0.3)
 
 **To run the program:**  
 1. Download the compressed release files.  
