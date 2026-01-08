@@ -1,5 +1,7 @@
 # LIMS - Lightweight Image Manipulation Software
 
+> **Note:** This is a school project.
+
 LIMS is a lightweight image-editing application written in C#.
 It features a clean and simple user interface built with the WPF framework.
 Users can import multiple images simultaneously, making it easy to edit several files in one session.
@@ -83,8 +85,7 @@ You can download the latest release of LIMS here: [v1.0.3](https://github.com/Lu
 No installation is required. The program should run on any Windows system that meets the requirements.
 
 ## Notes
-**This project is still in development!**  
-LIMS is currently a work-in-progress and may contain bugs or incomplete features.  
-This program was developed as a school project.
-LICENSE:  GNU GENERAL PUBLIC LICENSE Version 2
+**This project was developed as a school project**  
+LIMS offers only basic features but even those are in an essence usable.
+This project can be modified and used as described in the LICENSE: GNU GENERAL PUBLIC LICENSE version 2.
 
